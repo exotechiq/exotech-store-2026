@@ -1,0 +1,494 @@
+'use client';
+import { useState, useEffect } from 'react';
+
+const SUPABASE_URL = 'https://rharksujeckaseweipsm.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_P3zgWszt9ogANugiu0eaYA_QdCmknId';
+
+export default function Home() {
+  const [cart, setCart] = useState<any[]>([]);
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const [products, setProducts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // بيانات نموذج الطلب
+  const [customerName, setCustomerName] = useState('');
+  const [customerPhone, setCustomerPhone] = useState('');
+  const [customerCity, setCustomerCity] = useState('بغداد');
+  const [customerAddress, setCustomerAddress] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    async function loadProducts() {
+      try {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/products?select=*`, {
+          headers: {
+            apikey: SUPABASE_ANON_KEY,
+            Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+          },
+        });
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) {
+          setProducts(data);
+        } else {
+          setProducts([
+            {
+              id: 1,
+              name: 'شاشة قيمنق احترافية 144Hz',
+              price: 250,
+              category: 'شاشات',
+              image_url:
+                'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=500',
+            },
+            {
+              id: 2,
+              name: 'ماوس قيمنق RGB عالي الدقة',
+              price: 45,
+              category: 'اكسسوارات',
+              image_url:
+                'https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=500',
+            },
+            {
+              id: 3,
+              name: 'كيبورد ميكانيكي احترافي',
+              price: 75,
+              category: 'اكسسوارات',
+              image_url:
+                'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=500',
+            },
+          ]);
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadProducts();
+  }, []);
+
+  const addToCart = (product: any) => {
+    setCart([...cart, product]);
+    setIsCartOpen(true);
+  };
+
+  const removeFromCart = (index: number) => {
+    const newCart = [...cart];
+    newCart.splice(index, 1);
+    setCart(newCart);
+  };
+
+  const totalPrice = cart.reduce((sum, item) => sum + Number(item.price), 0);
+
+  const handleCheckout = (e: any) => {
+    e.preventDefault();
+    if (cart.length === 0) return alert('السلة فارغة!');
+    setIsSubmitting(true);
+
+    setTimeout(() => {
+      alert(
+        'تم إرسال طلبك بنجاح يا ' +
+          customerName +
+          '! سنتصل بك على الرقم ' +
+          customerPhone +
+          ' لتأكيد الشحن إلى ' +
+          customerCity +
+          '.'
+      );
+      setCart([]);
+      setIsCartOpen(false);
+      setIsSubmitting(false);
+      setCustomerName('');
+      setCustomerPhone('');
+      setCustomerAddress('');
+    }, 1000);
+  };
+
+  return (
+    <div
+      style={{
+        minHeight: '100vh',
+        backgroundColor: '#020617',
+        color: '#f8fafc',
+        fontFamily: 'sans-serif',
+        direction: 'rtl',
+      }}
+    >
+      {/* Header Bar */}
+      <nav
+        style={{
+          borderBottom: '1px solid #1e293b',
+          backgroundColor: '#0f172a',
+          padding: '0 24px',
+          height: '80px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}
+      >
+        <span
+          style={{ fontSize: '24px', fontWeight: 'bold', color: '#38bdf8' }}
+        >
+          EXOTECH
+        </span>
+        <div
+          onClick={() => setIsCartOpen(true)}
+          style={{
+            cursor: 'pointer',
+            backgroundColor: '#1e293b',
+            padding: '10px 18px',
+            borderRadius: '12px',
+            display: 'flex',
+            gap: '8px',
+            alignItems: 'center',
+          }}
+        >
+          <span>السلة</span>
+          <span
+            style={{
+              backgroundColor: '#38bdf8',
+              color: '#0f172a',
+              fontWeight: 'bold',
+              borderRadius: '50%',
+              padding: '2px 8px',
+              fontSize: '12px',
+            }}
+          >
+            {cart.length}
+          </span>
+        </div>
+      </nav>
+
+      {/* Hero Section */}
+      <header style={{ textAlign: 'center', padding: '50px 20px' }}>
+        <h1
+          style={{ fontSize: '38px', fontWeight: '900', marginBottom: '16px' }}
+        >
+          عالم الحواسيب والاكسسوارات{' '}
+          <span style={{ color: '#38bdf8' }}>الاحترافية</span>
+        </h1>
+        <p style={{ color: '#94a3b8', fontSize: '16px' }}>
+          أفضل القطع والمنتجات التقنية مع ضمان حقيقي وتوصيل سريع لكافة
+          المحافظات.
+        </p>
+      </header>
+
+      {/* Products Grid */}
+      <main
+        style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px 80px' }}
+      >
+        <h2
+          style={{ fontSize: '22px', fontWeight: 'bold', marginBottom: '24px' }}
+        >
+          أحدث المنتجات
+        </h2>
+
+        {loading ? (
+          <p style={{ color: '#38bdf8' }}>جاري تحميل المنتجات...</p>
+        ) : (
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+              gap: '24px',
+            }}
+          >
+            {products.map((p) => (
+              <div
+                key={p.id}
+                style={{
+                  backgroundColor: '#0f172a',
+                  borderRadius: '16px',
+                  border: '1px solid #1e293b',
+                  overflow: 'hidden',
+                }}
+              >
+                <img
+                  src={p.image_url || 'https://via.placeholder.com/300'}
+                  alt={p.name}
+                  style={{ width: '100%', height: '200px', objectFit: 'cover' }}
+                />
+                <div style={{ padding: '20px' }}>
+                  <span
+                    style={{
+                      fontSize: '12px',
+                      color: '#38bdf8',
+                      backgroundColor: '#0c4a6e',
+                      padding: '4px 10px',
+                      borderRadius: '20px',
+                      border: '1px solid #0284c7',
+                    }}
+                  >
+                    {p.category || 'عام'}
+                  </span>
+                  <h3
+                    style={{
+                      fontSize: '18px',
+                      fontWeight: 'bold',
+                      marginTop: '12px',
+                      marginBottom: '8px',
+                    }}
+                  >
+                    {p.name}
+                  </h3>
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      marginTop: '20px',
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontSize: '22px',
+                        fontWeight: 'bold',
+                        color: '#fff',
+                      }}
+                    >
+                      ${p.price}
+                    </span>
+                    <button
+                      onClick={() => addToCart(p)}
+                      style={{
+                        backgroundColor: '#38bdf8',
+                        color: '#0f172a',
+                        border: 'none',
+                        padding: '10px 16px',
+                        borderRadius: '10px',
+                        fontWeight: 'bold',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      + إضافة للسلة
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </main>
+
+      {/* Cart Drawer Modal */}
+      {isCartOpen && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(0,0,0,0.7)',
+            zIndex: 100,
+            display: 'flex',
+            justifyContent: 'flex-start',
+          }}
+        >
+          <div
+            style={{
+              width: '100%',
+              maxWidth: '420px',
+              backgroundColor: '#0f172a',
+              height: '100%',
+              padding: '24px',
+              overflowY: 'auto',
+              display: 'flex',
+              flexDirection: 'column',
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '20px',
+                borderBottom: '1px solid #1e293b',
+                paddingBottom: '12px',
+              }}
+            >
+              <h2 style={{ fontSize: '20px', fontWeight: 'bold' }}>
+                سلة الشراء ({cart.length})
+              </h2>
+              <button
+                onClick={() => setIsCartOpen(false)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#94a3b8',
+                  fontSize: '20px',
+                  cursor: 'pointer',
+                }}
+              >
+                X
+              </button>
+            </div>
+
+            {cart.length === 0 ? (
+              <p
+                style={{
+                  color: '#94a3b8',
+                  textAlign: 'center',
+                  marginTop: '40px',
+                }}
+              >
+                السلة فارغة حالياً
+              </p>
+            ) : (
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '12px',
+                  marginBottom: '24px',
+                }}
+              >
+                {cart.map((item, idx) => (
+                  <div
+                    key={idx}
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      backgroundColor: '#1e293b',
+                      padding: '12px',
+                      borderRadius: '10px',
+                    }}
+                  >
+                    <div>
+                      <div style={{ fontWeight: 'bold', fontSize: '14px' }}>
+                        {item.name}
+                      </div>
+                      <div style={{ color: '#38bdf8', fontSize: '14px' }}>
+                        ${item.price}
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => removeFromCart(idx)}
+                      style={{
+                        color: '#ef4444',
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      حذف
+                    </button>
+                  </div>
+                ))}
+                <div
+                  style={{
+                    borderTop: '1px solid #1e293b',
+                    paddingTop: '12px',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    fontWeight: 'bold',
+                    fontSize: '18px',
+                  }}
+                >
+                  <span>المجموع:</span>
+                  <span style={{ color: '#38bdf8' }}>${totalPrice}</span>
+                </div>
+              </div>
+            )}
+
+            {/* Checkout Form */}
+            {cart.length > 0 && (
+              <form
+                onSubmit={handleCheckout}
+                style={{
+                  borderTop: '1px solid #1e293b',
+                  paddingTop: '16px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '12px',
+                }}
+              >
+                <h3 style={{ fontWeight: 'bold', fontSize: '15px' }}>
+                  معلومات التوصيل (الدفع عند الاستلام)
+                </h3>
+
+                <input
+                  type="text"
+                  placeholder="الاسم الكامل"
+                  required
+                  value={customerName}
+                  onChange={(e) => setCustomerName(e.target.value)}
+                  style={{
+                    backgroundColor: '#1e293b',
+                    border: '1px solid #334155',
+                    color: '#fff',
+                    padding: '10px',
+                    borderRadius: '8px',
+                  }}
+                />
+
+                <input
+                  type="tel"
+                  placeholder="رقم الهاتف"
+                  required
+                  value={customerPhone}
+                  onChange={(e) => setCustomerPhone(e.target.value)}
+                  style={{
+                    backgroundColor: '#1e293b',
+                    border: '1px solid #334155',
+                    color: '#fff',
+                    padding: '10px',
+                    borderRadius: '8px',
+                  }}
+                />
+
+                <select
+                  value={customerCity}
+                  onChange={(e) => setCustomerCity(e.target.value)}
+                  style={{
+                    backgroundColor: '#1e293b',
+                    border: '1px solid #334155',
+                    color: '#fff',
+                    padding: '10px',
+                    borderRadius: '8px',
+                  }}
+                >
+                  <option value="بغداد">بغداد</option>
+                  <option value="البصرة">البصرة</option>
+                  <option value="أربيل">أربيل</option>
+                  <option value="النجف">النجف</option>
+                  <option value="كربلاء">كربلاء</option>
+                  <option value="بقية المحافظات">بقية المحافظات</option>
+                </select>
+
+                <input
+                  type="text"
+                  placeholder="العنوان التفصيلي / نقطة دالة"
+                  required
+                  value={customerAddress}
+                  onChange={(e) => setCustomerAddress(e.target.value)}
+                  style={{
+                    backgroundColor: '#1e293b',
+                    border: '1px solid #334155',
+                    color: '#fff',
+                    padding: '10px',
+                    borderRadius: '8px',
+                  }}
+                />
+
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  style={{
+                    backgroundColor: '#38bdf8',
+                    color: '#0f172a',
+                    border: 'none',
+                    padding: '12px',
+                    borderRadius: '10px',
+                    fontWeight: 'bold',
+                    cursor: 'pointer',
+                    marginTop: '10px',
+                  }}
+                >
+                  {isSubmitting ? 'جاري إرسال الطلب...' : 'تأكيد وشراء الآن'}
+                </button>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
