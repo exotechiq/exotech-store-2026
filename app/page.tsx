@@ -134,6 +134,7 @@ const CATEGORIES_DATA = [
   },
 ];
 
+// تم تغيير صورة الشاشات بصورة شاشات PC قيمنق واضحة ومباشرة
 const BANNERS = [
   {
     titleAr: 'تجميعات احترافية بأفضل الأسعار',
@@ -144,10 +145,18 @@ const BANNERS = [
   },
   {
     titleAr: 'أقوى كروت الشاشة والمعالجات',
-    descAr: 'أحدث ملحقات الجيمنج ومعدات الأداء الفائق متوفرة الآن',
+    descAr: 'أحدث ملحقات القيمنق ومعدات الأداء الفائق متوفرة الآن',
     titleEn: 'Next-Gen GPUs & Processors',
     descEn: 'Equip your battle station with high-tier gaming components',
-    bg: 'https://images.unsplash.com/photo-1591488320449-011701bb6704?auto=format&fit=crop&w=1200&q=80',
+    bg: 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=1200&q=80',
+  },
+  {
+    titleAr: 'شاشات قيمنق احترافية للـ PC',
+    descAr:
+      'شاشات عالية التردد 144Hz و 240Hz بدقة 2K و 4K لأقوى أداء وأعلى وضوح',
+    titleEn: 'High-End PC Gaming Monitors',
+    descEn: 'Fast-response IPS curved and flat monitors for competitive gaming',
+    bg: 'https://images.unsplash.com/photo-1593305841991-05c297ba4575?auto=format&fit=crop&w=1200&q=80',
   },
 ];
 
@@ -212,6 +221,13 @@ export default function Home() {
     }
     return arr;
   };
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % BANNERS.length);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     try {
@@ -924,7 +940,7 @@ export default function Home() {
             padding: '24px 20px 0 20px',
           }}
         >
-          {/* بانر العروض */}
+          {/* بانر العروض المتحرك */}
           <div
             style={{
               position: 'relative',
@@ -933,6 +949,7 @@ export default function Home() {
               overflow: 'hidden',
               marginBottom: '32px',
               border: `1px solid ${colors.border}`,
+              backgroundColor: '#0c0f17',
             }}
           >
             {BANNERS.map((banner, index) => (
@@ -950,12 +967,15 @@ export default function Home() {
                     banner.bg
                   })`,
                   backgroundSize: 'cover',
+                  backgroundPosition: 'center',
                   opacity: index === currentSlide ? 1 : 0,
-                  transition: 'opacity 0.8s ease-in-out',
+                  transition: 'opacity 1s ease-in-out',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'center',
                   padding: '0 40px',
+                  zIndex: index === currentSlide ? 1 : 0,
+                  pointerEvents: index === currentSlide ? 'auto' : 'none',
                 }}
               >
                 <h2
@@ -964,15 +984,56 @@ export default function Home() {
                     fontWeight: '900',
                     color: '#fff',
                     margin: '0 0 8px 0',
+                    textShadow: '0 2px 10px rgba(0,0,0,0.7)',
                   }}
                 >
                   {lang === 'ar' ? banner.titleAr : banner.titleEn}
                 </h2>
-                <p style={{ fontSize: '14px', color: '#cbd5e1', margin: 0 }}>
+                <p
+                  style={{
+                    fontSize: '14px',
+                    color: '#cbd5e1',
+                    margin: 0,
+                    textShadow: '0 1px 6px rgba(0,0,0,0.7)',
+                  }}
+                >
                   {lang === 'ar' ? banner.descAr : banner.descEn}
                 </p>
               </div>
             ))}
+
+            {/* مؤشرات التبديل التفاعلية */}
+            <div
+              style={{
+                position: 'absolute',
+                bottom: '12px',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                display: 'flex',
+                gap: '8px',
+                zIndex: 10,
+              }}
+            >
+              {BANNERS.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setCurrentSlide(i)}
+                  style={{
+                    width: i === currentSlide ? '24px' : '8px',
+                    height: '8px',
+                    borderRadius: '4px',
+                    backgroundColor:
+                      i === currentSlide
+                        ? colors.primary
+                        : 'rgba(255,255,255,0.4)',
+                    border: 'none',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s ease',
+                    padding: 0,
+                  }}
+                />
+              ))}
+            </div>
           </div>
 
           {/* شريط البحث */}
