@@ -1,11 +1,17 @@
 'use client';
-import React, { useState } from 'react';
+import React from 'react';
+
+export interface SubcategoryItem {
+  id: string;
+  titleAr: string;
+  titleEn: string;
+}
 
 export interface CategoryItem {
   id: string;
   titleAr: string;
   titleEn: string;
-  subcategories?: { id: string; titleAr: string; titleEn: string }[];
+  subcategories?: SubcategoryItem[];
 }
 
 interface SidebarDrawerProps {
@@ -27,206 +33,160 @@ export default function SidebarDrawer({
   lang,
   colors,
 }: SidebarDrawerProps) {
-  const [expandedCats, setExpandedCats] = useState<{ [key: string]: boolean }>(
-    {}
-  );
-
   if (!isOpen) return null;
 
-  const toggleExpand = (catId: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    setExpandedCats((prev) => ({
-      ...prev,
-      [catId]: !prev[catId],
-    }));
-  };
-
   return (
-    <div
-      onClick={onClose}
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100vw',
-        height: '100vh',
-        backgroundColor: 'rgba(0,0,0,0.7)',
-        backdropFilter: 'blur(4px)',
-        zIndex: 1400,
-        display: 'flex',
-        justifyContent: lang === 'ar' ? 'flex-start' : 'flex-end',
-      }}
-    >
+    <>
+      {/* خلفية معتمة عند الفتح */}
       <div
-        onClick={(e) => e.stopPropagation()}
+        onClick={onClose}
         style={{
-          width: '320px',
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          backgroundColor: 'rgba(0, 0, 0, 0.7)',
+          backdropFilter: 'blur(4px)',
+          zIndex: 1400,
+        }}
+      />
+
+      {/* القائمة الجانبية - تفتح من اليمين في العربي */}
+      <div
+        style={{
+          position: 'fixed',
+          top: 0,
+          right: lang === 'ar' ? 0 : 'auto',
+          left: lang === 'ar' ? 'auto' : 0,
+          width: '300px',
           maxWidth: '85vw',
           height: '100vh',
-          backgroundColor: '#07090e',
-          borderLeft: lang === 'ar' ? 'none' : `1px solid ${colors.border}`,
-          borderRight: lang === 'ar' ? `1px solid ${colors.border}` : 'none',
+          backgroundColor: colors.surface,
+          borderLeft: lang === 'ar' ? `1px solid ${colors.border}` : 'none',
+          borderRight: lang === 'ar' ? 'none' : `1px solid ${colors.border}`,
+          zIndex: 1500,
           display: 'flex',
           flexDirection: 'column',
-          boxShadow: '0 0 30px rgba(0,0,0,0.9)',
+          boxShadow: '0 0 30px rgba(0,0,0,0.8)',
+          overflowY: 'auto',
+          padding: '20px',
+          direction: lang === 'ar' ? 'rtl' : 'ltr',
           boxSizing: 'border-box',
         }}
       >
         {/* رأس القائمة */}
         <div
           style={{
-            padding: '18px 20px',
-            borderBottom: `1px solid ${colors.border}`,
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
+            marginBottom: '20px',
+            borderBottom: `1px solid ${colors.border}`,
+            paddingBottom: '12px',
           }}
         >
-          <span
+          <h3
             style={{
-              fontSize: '16px',
+              fontSize: '18px',
               fontWeight: 'bold',
               color: colors.primary,
+              margin: 0,
             }}
           >
-            📂 {lang === 'ar' ? 'أقسام المتجر' : 'Store Categories'}
-          </span>
+            {lang === 'ar' ? 'الأقسام والمنتجات' : 'Categories'}
+          </h3>
           <button
             onClick={onClose}
             style={{
               background: 'none',
               border: 'none',
               color: colors.muted,
-              fontSize: '18px',
+              fontSize: '20px',
               cursor: 'pointer',
+              padding: '4px 8px',
             }}
           >
             ✕
           </button>
         </div>
 
-        {/* قائمة الأقسام الرئيسية والفرعية */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: '12px' }}>
+        {/* عناصر الأقسام */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           {categories.map((cat) => {
-            const hasSubs = cat.subcategories && cat.subcategories.length > 0;
-            const isExpanded = !!expandedCats[cat.id];
             const isSelected = selectedCategory === cat.id;
-
             return (
-              <div key={cat.id} style={{ marginBottom: '4px' }}>
-                <div
+              <div
+                key={cat.id}
+                style={{ display: 'flex', flexDirection: 'column' }}
+              >
+                <button
                   onClick={() => {
                     onSelectCategory(cat.id);
-                    if (!hasSubs) onClose();
+                    onClose();
                   }}
                   style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: '11px 14px',
-                    borderRadius: '10px',
                     backgroundColor: isSelected
-                      ? 'rgba(0, 210, 255, 0.12)'
-                      : 'transparent',
-                    border: isSelected
-                      ? `1.5px solid ${colors.primary}`
-                      : '1px solid transparent',
-                    color: isSelected ? colors.primary : '#e2e8f0',
-                    cursor: 'pointer',
+                      ? colors.primary
+                      : colors.cardInner,
+                    color: isSelected ? colors.primaryText : colors.text,
+                    border: `1px solid ${
+                      isSelected ? colors.primary : colors.border
+                    }`,
+                    padding: '10px 14px',
+                    borderRadius: '10px',
+                    textAlign: lang === 'ar' ? 'right' : 'left',
                     fontSize: '13.5px',
-                    fontWeight: isSelected ? 'bold' : 'normal',
-                    transition: 'all 0.15s ease',
+                    fontWeight: isSelected ? 'bold' : '500',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
                   }}
                 >
-                  <span>{lang === 'ar' ? cat.titleAr : cat.titleEn}</span>
+                  {lang === 'ar' ? cat.titleAr : cat.titleEn}
+                </button>
 
-                  {hasSubs && (
-                    <button
-                      onClick={(e) => toggleExpand(cat.id, e)}
-                      style={{
-                        background: 'none',
-                        border: 'none',
-                        color: colors.muted,
-                        cursor: 'pointer',
-                        fontSize: '11px',
-                        transform: isExpanded
-                          ? 'rotate(90deg)'
-                          : 'rotate(0deg)',
-                        transition: 'transform 0.2s',
-                        padding: '4px',
-                      }}
-                    >
-                      {lang === 'ar' ? '◀' : '▶'}
-                    </button>
-                  )}
-                </div>
-
-                {/* الأقسام الفرعية المنسدلة */}
-                {hasSubs && isExpanded && (
+                {/* الأقسام الفرعية إن وجدت */}
+                {cat.subcategories && cat.subcategories.length > 0 && (
                   <div
                     style={{
-                      marginRight: lang === 'ar' ? '18px' : '0',
-                      marginLeft: lang === 'ar' ? '0' : '18px',
-                      paddingLeft: lang === 'ar' ? '0' : '10px',
-                      paddingRight: lang === 'ar' ? '10px' : '0',
-                      borderRight:
-                        lang === 'ar'
-                          ? `2px solid ${colors.primary}44`
-                          : 'none',
-                      borderLeft:
-                        lang === 'ar'
-                          ? 'none'
-                          : `2px solid ${colors.primary}44`,
-                      marginTop: '4px',
                       display: 'flex',
                       flexDirection: 'column',
-                      gap: '2px',
+                      gap: '4px',
+                      paddingRight: lang === 'ar' ? '14px' : '0',
+                      paddingLeft: lang === 'ar' ? '0' : '14px',
+                      marginTop: '4px',
                     }}
                   >
-                    {cat.subcategories!.map((sub) => {
-                      const isSubSelected = selectedCategory === sub.id;
-                      return (
-                        <div
-                          key={sub.id}
-                          onClick={() => {
-                            onSelectCategory(sub.id);
-                            onClose();
-                          }}
-                          style={{
-                            padding: '8px 12px',
-                            borderRadius: '8px',
-                            backgroundColor: isSubSelected
-                              ? colors.cardInner
-                              : 'transparent',
-                            color: isSubSelected ? colors.primary : '#94a3b8',
-                            fontSize: '12.5px',
-                            fontWeight: isSubSelected ? 'bold' : 'normal',
-                            cursor: 'pointer',
-                          }}
-                        >
-                          • {lang === 'ar' ? sub.titleAr : sub.titleEn}
-                        </div>
-                      );
-                    })}
+                    {cat.subcategories.map((sub) => (
+                      <button
+                        key={sub.id}
+                        onClick={() => {
+                          onSelectCategory(sub.id);
+                          onClose();
+                        }}
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          color:
+                            selectedCategory === sub.id
+                              ? colors.primary
+                              : colors.muted,
+                          padding: '6px 8px',
+                          textAlign: lang === 'ar' ? 'right' : 'left',
+                          fontSize: '12px',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        • {lang === 'ar' ? sub.titleAr : sub.titleEn}
+                      </button>
+                    ))}
                   </div>
                 )}
               </div>
             );
           })}
         </div>
-
-        <div
-          style={{
-            padding: '14px',
-            borderTop: `1px solid ${colors.border}`,
-            textAlign: 'center',
-            fontSize: '11.5px',
-            color: colors.muted,
-          }}
-        >
-          EXOTECH Store © 2026
-        </div>
       </div>
-    </div>
+    </>
   );
 }
