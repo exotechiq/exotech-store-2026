@@ -96,8 +96,7 @@ const INITIAL_CATEGORIES: CategoryItem[] = [
   { id: 'عطور', titleAr: 'عطور', titleEn: 'Perfumes' },
 ];
 
-// الأقسام المكتملة مع الإضافات الجديدة
-const CATEGORIES_DATA = [
+const INITIAL_HOME_CATEGORIES = [
   {
     id: 'all',
     titleAr: 'الكل',
@@ -189,8 +188,7 @@ const BANNERS = [
   },
   {
     titleAr: 'شاشات قيمنق احترافية للـ PC',
-    descAr:
-      'شاشات عالية التردد 144Hz و 240Hz بدقة 2K و 4K لأقوى أداء وأعلى وضوح',
+    descAr: 'شاشات عالية التردد 144Hz و 240Hz بدقة 2K و 4K لأقوى أداء وأعلى وضوح',
     titleEn: 'High-End PC Gaming Monitors',
     descEn: 'Fast-response IPS curved and flat monitors for competitive gaming',
     bg: 'https://images.unsplash.com/photo-1593305841991-05c297ba4575?auto=format&fit=crop&w=1200&q=80',
@@ -216,6 +214,7 @@ export default function Home() {
   const [visibleCount, setVisibleCount] = useState(24);
   const [sidebarCategories, setSidebarCategories] =
     useState<CategoryItem[]>(INITIAL_CATEGORIES);
+  const [homeCategories, setHomeCategories] = useState<any[]>(INITIAL_HOME_CATEGORIES);
   const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
@@ -270,6 +269,9 @@ export default function Home() {
     try {
       const savedCats = localStorage.getItem('exotech_nested_categories');
       if (savedCats) setSidebarCategories(JSON.parse(savedCats));
+
+      const savedHomeCats = localStorage.getItem('exotech_home_categories');
+      if (savedHomeCats) setHomeCategories(JSON.parse(savedHomeCats));
 
       const savedWishlist = localStorage.getItem('exotech_wishlist');
       if (savedWishlist) setWishlist(JSON.parse(savedWishlist));
@@ -342,6 +344,31 @@ export default function Home() {
       return cat;
     });
     saveCategories(updated);
+  };
+
+  // التحكم بكروت الواجهة الرئيسية من الأدمن
+  const handleAddHomeCategory = (newHomeCat: any) => {
+    const updated = [...homeCategories, newHomeCat];
+    setHomeCategories(updated);
+    localStorage.setItem('exotech_home_categories', JSON.stringify(updated));
+    alert('تمت إضافة كرت القسم للواجهة الرئيسية بنجاح!');
+  };
+
+  const handleUpdateHomeCategory = (updatedCat: any) => {
+    const updated = homeCategories.map((cat) =>
+      cat.id === updatedCat.id ? updatedCat : cat
+    );
+    setHomeCategories(updated);
+    localStorage.setItem('exotech_home_categories', JSON.stringify(updated));
+    alert('تم تحديث كرت القسم بنجاح!');
+  };
+
+  const handleDeleteHomeCategory = (catId: string) => {
+    if (catId === 'all') return;
+    if (!confirm('هل تريد بالتأكيد حذف هذا الكرت من الواجهة الرئيسية؟')) return;
+    const updated = homeCategories.filter((c) => c.id !== catId);
+    setHomeCategories(updated);
+    localStorage.setItem('exotech_home_categories', JSON.stringify(updated));
   };
 
   const toggleWishlist = (product: any, e?: React.MouseEvent) => {
@@ -501,7 +528,6 @@ export default function Home() {
         }
         .rgb-logo { animation: rgbGlow 6s linear infinite; }
 
-        /* شريط التمرير الأفقي للأقسام (Scrollable Row) */
         .categories-scroll-row {
           display: flex;
           gap: 14px;
@@ -529,7 +555,6 @@ export default function Home() {
           letter-spacing: 1px;
         }
 
-        /* ستايل الموبايل */
         @media (max-width: 768px) {
           .banner-container { height: 180px !important; margin-bottom: 20px !important; border-radius: 14px !important; }
           .banner-title { font-size: 16px !important; margin-bottom: 4px !important; }
@@ -874,9 +899,7 @@ export default function Home() {
               }}
             >
               <span>👤</span>
-              <span className="btn-text-hide">
-                {lang === 'ar' ? 'حسابي' : 'Account'}
-              </span>
+              <span className="btn-text-hide">{lang === 'ar' ? 'حسابي' : 'Account'}</span>
             </button>
           )}
 
@@ -979,9 +1002,7 @@ export default function Home() {
                 <circle cx="20" cy="21" r="1"></circle>
                 <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
               </svg>
-              <span>
-                ({cart.reduce((acc, item) => acc + (item.qty || 1), 0)})
-              </span>
+              <span>({cart.reduce((acc, item) => acc + (item.qty || 1), 0)})</span>
             </button>
           )}
         </div>
@@ -995,6 +1016,10 @@ export default function Home() {
           onDeleteCategory={handleDeleteCategory}
           onAddSubcategory={handleAddSubcategory}
           onDeleteSubcategory={handleDeleteSubcategory}
+          homeCategories={homeCategories}
+          onAddHomeCategory={handleAddHomeCategory}
+          onUpdateHomeCategory={handleUpdateHomeCategory}
+          onDeleteHomeCategory={handleDeleteHomeCategory}
           products={products}
           onSaveProduct={handleSaveProduct}
           onDeleteProduct={handleDeleteProduct}
@@ -1119,9 +1144,7 @@ export default function Home() {
                     height: '6px',
                     borderRadius: '3px',
                     backgroundColor:
-                      i === currentSlide
-                        ? colors.primary
-                        : 'rgba(255,255,255,0.4)',
+                      i === currentSlide ? colors.primary : 'rgba(255,255,255,0.4)',
                     border: 'none',
                     cursor: 'pointer',
                     transition: 'all 0.3s ease',
@@ -1133,13 +1156,7 @@ export default function Home() {
           </div>
 
           {/* شريط البحث المطور */}
-          <div
-            style={{
-              maxWidth: '850px',
-              margin: '0 auto 28px auto',
-              width: '100%',
-            }}
-          >
+          <div style={{ maxWidth: '850px', margin: '0 auto 28px auto', width: '100%' }}>
             <input
               type="text"
               value={searchQuery}
@@ -1162,16 +1179,15 @@ export default function Home() {
             />
           </div>
 
-          {/* شريط الأقسام الأفقي القابل للتمرير والسحب */}
+          {/* شريط الأقسام الأفقي القابل للتمرير والسحب والمربوط بالأدمن */}
           <div
             className="categories-scroll-row"
             style={{
               WebkitOverflowScrolling: 'touch',
             }}
           >
-            {CATEGORIES_DATA.map((cat) => {
-              const isSelected =
-                selectedCategory.toLowerCase() === cat.id.toLowerCase();
+            {homeCategories.map((cat) => {
+              const isSelected = selectedCategory.toLowerCase() === cat.id.toLowerCase();
               return (
                 <div
                   key={cat.id}
@@ -1387,13 +1403,7 @@ export default function Home() {
                         }}
                       />
                     </div>
-                    <span
-                      style={{
-                        fontSize: '11px',
-                        color: colors.primary,
-                        fontWeight: 'bold',
-                      }}
-                    >
+                    <span style={{ fontSize: '11px', color: colors.primary, fontWeight: 'bold' }}>
                       {p.category || 'عام'}
                     </span>
                     <h4
