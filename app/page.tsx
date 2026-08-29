@@ -134,7 +134,6 @@ const CATEGORIES_DATA = [
   },
 ];
 
-// تم تغيير صورة الشاشات بصورة شاشات PC قيمنق واضحة ومباشرة
 const BANNERS = [
   {
     titleAr: 'تجميعات احترافية بأفضل الأسعار',
@@ -444,19 +443,41 @@ export default function Home() {
     <div
       style={{
         minHeight: '100vh',
+        width: '100%',
+        maxWidth: '100vw',
+        overflowX: 'hidden', // يمنع خروج الموقع أو اهتزازه يمنة ويسرة
         backgroundColor: colors.bg,
         color: colors.text,
         fontFamily: 'sans-serif',
         direction: lang === 'ar' ? 'rtl' : 'ltr',
+        boxSizing: 'border-box',
       }}
     >
       <style>{`
+        * { box-sizing: border-box; }
+        html, body { overflow-x: hidden; width: 100%; max-width: 100vw; margin: 0; padding: 0; }
         @keyframes rgbGlow {
           0% { color: #00d2ff; text-shadow: 0 0 12px rgba(0, 210, 255, 0.8); }
           50% { color: #ff0055; text-shadow: 0 0 12px rgba(255, 0, 85, 0.8); }
           100% { color: #00d2ff; text-shadow: 0 0 12px rgba(0, 210, 255, 0.8); }
         }
         .rgb-logo { animation: rgbGlow 6s linear infinite; }
+        
+        @media (max-width: 640px) {
+          .banner-container { height: 180px !important; margin-bottom: 20px !important; border-radius: 14px !important; }
+          .banner-title { font-size: 16px !important; margin-bottom: 4px !important; }
+          .banner-desc { font-size: 11px !important; line-height: 1.4 !important; }
+          .banner-content { padding: 0 16px !important; }
+          .header-container { padding: 10px 12px !important; }
+          .site-title { font-size: 19px !important; }
+          .btn-text-hide { display: none !important; }
+          .products-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 10px !important; }
+          .product-card { padding: 10px !important; border-radius: 12px !important; }
+          .product-img-box { height: 120px !important; margin-bottom: 8px !important; }
+          .product-title { font-size: 12px !important; margin: 4px 0 !important; }
+          .product-price { font-size: 13px !important; }
+          .product-btn { padding: 6px 8px !important; font-size: 11px !important; }
+        }
       `}</style>
 
       {/* نافذة الحساب */}
@@ -470,7 +491,7 @@ export default function Home() {
         colors={colors}
       />
 
-      {/* القائمة الجانبية الهرمية */}
+      {/* القائمة الجانبية الهرمية - مثبتة على اليمين */}
       <SidebarDrawer
         isOpen={isDrawerOpen}
         onClose={() => setIsDrawerOpen(false)}
@@ -499,7 +520,7 @@ export default function Home() {
             backgroundColor: colors.surface,
             borderLeft: lang === 'ar' ? 'none' : `1px solid ${colors.border}`,
             borderRight: lang === 'ar' ? `1px solid ${colors.border}` : 'none',
-            padding: '24px',
+            padding: '20px',
             zIndex: 1200,
             display: 'flex',
             flexDirection: 'column',
@@ -592,7 +613,7 @@ export default function Home() {
                         whiteSpace: 'nowrap',
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
-                        maxWidth: '140px',
+                        maxWidth: '120px',
                       }}
                     >
                       {item.name}
@@ -672,28 +693,33 @@ export default function Home() {
         chatId={TELEGRAM_CHAT_ID}
       />
 
-      {/* الهيدر */}
+      {/* الهيدر المتجاوب */}
       <header
+        className="header-container"
         style={{
           borderBottom: `1px solid ${colors.border}`,
-          padding: '16px 24px',
+          padding: '14px 20px',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
           backgroundColor: colors.surface,
+          position: 'sticky',
+          top: 0,
+          zIndex: 100,
+          width: '100%',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <button
             onClick={() => setIsDrawerOpen(true)}
             style={{
               backgroundColor: colors.cardInner,
               color: colors.text,
               border: `1px solid ${colors.border}`,
-              padding: '8px 12px',
+              padding: '6px 10px',
               borderRadius: '8px',
               cursor: 'pointer',
-              fontSize: '18px',
+              fontSize: '16px',
             }}
           >
             ☰
@@ -706,11 +732,11 @@ export default function Home() {
               setSelectedProduct(null);
               setView('store');
             }}
-            className="rgb-logo"
+            className="rgb-logo site-title"
             style={{
-              fontSize: '28px',
+              fontSize: '24px',
               fontWeight: '900',
-              letterSpacing: '2px',
+              letterSpacing: '1px',
               cursor: 'pointer',
               margin: 0,
             }}
@@ -719,24 +745,28 @@ export default function Home() {
           </h1>
         </div>
 
-        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
           {currentUser ? (
             <div
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '6px',
+                gap: '4px',
                 backgroundColor: colors.cardInner,
-                padding: '4px 10px',
+                padding: '4px 8px',
                 borderRadius: '8px',
                 border: `1px solid ${colors.border}`,
               }}
             >
               <span
                 style={{
-                  fontSize: '13px',
+                  fontSize: '11px',
                   fontWeight: 'bold',
                   color: colors.primary,
+                  maxWidth: '80px',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
                 }}
               >
                 👤 {currentUser.name}
@@ -748,7 +778,7 @@ export default function Home() {
                   background: 'none',
                   border: 'none',
                   color: '#ef4444',
-                  fontSize: '12px',
+                  fontSize: '11px',
                   cursor: 'pointer',
                   fontWeight: 'bold',
                 }}
@@ -763,18 +793,20 @@ export default function Home() {
                 backgroundColor: colors.cardInner,
                 color: colors.text,
                 border: `1px solid ${colors.border}`,
-                padding: '6px 12px',
+                padding: '6px 10px',
                 borderRadius: '8px',
                 cursor: 'pointer',
-                fontSize: '12.5px',
+                fontSize: '12px',
                 fontWeight: 'bold',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '6px',
+                gap: '4px',
               }}
             >
               <span>👤</span>
-              <span>{lang === 'ar' ? 'حسابي' : 'Account'}</span>
+              <span className="btn-text-hide">
+                {lang === 'ar' ? 'حسابي' : 'Account'}
+              </span>
             </button>
           )}
 
@@ -784,29 +816,14 @@ export default function Home() {
               backgroundColor: colors.cardInner,
               color: colors.text,
               border: `1px solid ${colors.border}`,
-              padding: '6px 12px',
+              padding: '6px 10px',
               borderRadius: '8px',
               cursor: 'pointer',
-              fontSize: '12px',
+              fontSize: '11px',
               fontWeight: 'bold',
             }}
           >
-            🌐 {lang === 'ar' ? 'English' : 'عربي'}
-          </button>
-          <button
-            onClick={() => setTheme(isDark ? 'light' : 'dark')}
-            style={{
-              backgroundColor: colors.cardInner,
-              color: colors.text,
-              border: `1px solid ${colors.border}`,
-              padding: '6px 12px',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontSize: '12px',
-              fontWeight: 'bold',
-            }}
-          >
-            {isDark ? '☀️ Light' : '🌙 Dark'}
+            {lang === 'ar' ? 'EN' : 'عربي'}
           </button>
 
           <button
@@ -815,19 +832,19 @@ export default function Home() {
               backgroundColor: colors.cardInner,
               color: wishlist.length > 0 ? colors.heart : colors.muted,
               border: `1px solid ${colors.border}`,
-              padding: '8px 12px',
+              padding: '6px 10px',
               borderRadius: '8px',
               cursor: 'pointer',
-              fontSize: '15px',
+              fontSize: '13px',
               display: 'flex',
               alignItems: 'center',
-              gap: '4px',
+              gap: '3px',
               fontWeight: 'bold',
             }}
           >
             <svg
-              width="18"
-              height="18"
+              width="15"
+              height="15"
               viewBox="0 0 24 24"
               fill={wishlist.length > 0 ? colors.heart : 'none'}
               stroke={colors.heart}
@@ -850,10 +867,11 @@ export default function Home() {
                 backgroundColor: colors.cardInner,
                 color: colors.primary,
                 border: `1px solid ${colors.border}`,
-                padding: '8px 16px',
+                padding: '6px 12px',
                 borderRadius: '8px',
                 cursor: 'pointer',
                 fontWeight: 'bold',
+                fontSize: '11px',
               }}
             >
               العودة للمتجر
@@ -867,18 +885,19 @@ export default function Home() {
                 backgroundColor: colors.primary,
                 color: colors.primaryText,
                 border: 'none',
-                padding: '8px 16px',
+                padding: '6px 12px',
                 borderRadius: '8px',
                 cursor: 'pointer',
                 fontWeight: 'bold',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '6px',
+                gap: '4px',
+                fontSize: '12px',
               }}
             >
               <svg
-                width="18"
-                height="18"
+                width="15"
+                height="15"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -937,24 +956,29 @@ export default function Home() {
           style={{
             maxWidth: '1280px',
             margin: '0 auto',
-            padding: '24px 20px 0 20px',
+            padding: '16px 12px 0 12px',
+            width: '100%',
+            overflowX: 'hidden',
           }}
         >
-          {/* بانر العروض المتحرك */}
+          {/* بانر العروض المتجاوب */}
           <div
+            className="banner-container"
             style={{
               position: 'relative',
               height: '280px',
-              borderRadius: '20px',
+              borderRadius: '16px',
               overflow: 'hidden',
-              marginBottom: '32px',
+              marginBottom: '24px',
               border: `1px solid ${colors.border}`,
               backgroundColor: '#0c0f17',
+              width: '100%',
             }}
           >
             {BANNERS.map((banner, index) => (
               <div
                 key={index}
+                className="banner-content"
                 style={{
                   position: 'absolute',
                   top: 0,
@@ -973,25 +997,27 @@ export default function Home() {
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'center',
-                  padding: '0 40px',
+                  padding: '0 32px',
                   zIndex: index === currentSlide ? 1 : 0,
                   pointerEvents: index === currentSlide ? 'auto' : 'none',
                 }}
               >
                 <h2
+                  className="banner-title"
                   style={{
-                    fontSize: '28px',
+                    fontSize: '26px',
                     fontWeight: '900',
                     color: '#fff',
-                    margin: '0 0 8px 0',
+                    margin: '0 0 6px 0',
                     textShadow: '0 2px 10px rgba(0,0,0,0.7)',
                   }}
                 >
                   {lang === 'ar' ? banner.titleAr : banner.titleEn}
                 </h2>
                 <p
+                  className="banner-desc"
                   style={{
-                    fontSize: '14px',
+                    fontSize: '13px',
                     color: '#cbd5e1',
                     margin: 0,
                     textShadow: '0 1px 6px rgba(0,0,0,0.7)',
@@ -1006,11 +1032,11 @@ export default function Home() {
             <div
               style={{
                 position: 'absolute',
-                bottom: '12px',
+                bottom: '10px',
                 left: '50%',
                 transform: 'translateX(-50%)',
                 display: 'flex',
-                gap: '8px',
+                gap: '6px',
                 zIndex: 10,
               }}
             >
@@ -1019,9 +1045,9 @@ export default function Home() {
                   key={i}
                   onClick={() => setCurrentSlide(i)}
                   style={{
-                    width: i === currentSlide ? '24px' : '8px',
-                    height: '8px',
-                    borderRadius: '4px',
+                    width: i === currentSlide ? '20px' : '6px',
+                    height: '6px',
+                    borderRadius: '3px',
                     backgroundColor:
                       i === currentSlide
                         ? colors.primary
@@ -1040,9 +1066,10 @@ export default function Home() {
           <div
             style={{
               maxWidth: '750px',
-              margin: '0 auto 30px auto',
+              margin: '0 auto 20px auto',
               display: 'flex',
               gap: '10px',
+              width: '100%',
             }}
           >
             <input
@@ -1055,23 +1082,28 @@ export default function Home() {
               placeholder="ابحث عن منتج، قطعة، قسم، أو علامة تجارية..."
               style={{
                 flex: 1,
-                padding: '14px 20px',
+                width: '100%',
+                padding: '12px 16px',
                 borderRadius: '12px',
                 border: `1px solid ${colors.border}`,
                 backgroundColor: colors.surface,
                 color: colors.text,
+                fontSize: '13px',
+                outline: 'none',
               }}
             />
           </div>
 
-          {/* الأقسام الرأسية */}
+          {/* الأقسام الأفقية مع شريط تمرير سلس ومحكوم */}
           <div
             style={{
               display: 'flex',
-              gap: '12px',
+              gap: '10px',
               overflowX: 'auto',
-              paddingBottom: '16px',
-              marginBottom: '30px',
+              paddingBottom: '12px',
+              marginBottom: '24px',
+              width: '100%',
+              WebkitOverflowScrolling: 'touch',
             }}
           >
             {CATEGORIES_DATA.map((cat) => (
@@ -1082,9 +1114,9 @@ export default function Home() {
                   setVisibleCount(24);
                 }}
                 style={{
-                  minWidth: '115px',
-                  height: '240px',
-                  borderRadius: '16px',
+                  minWidth: '95px',
+                  height: '180px',
+                  borderRadius: '14px',
                   backgroundImage: `linear-gradient(to top, rgba(7, 9, 14, 0.95), rgba(7, 9, 14, 0.2)), url(${cat.bg})`,
                   backgroundSize: 'cover',
                   border:
@@ -1102,7 +1134,7 @@ export default function Home() {
                   style={{
                     writingMode: 'vertical-rl',
                     color: '#fff',
-                    fontSize: '18px',
+                    fontSize: '15px',
                     fontWeight: '800',
                     transform: 'rotate(180deg)',
                   }}
@@ -1119,29 +1151,29 @@ export default function Home() {
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
-              marginBottom: '20px',
+              marginBottom: '16px',
               borderBottom: `1px solid ${colors.border}`,
-              paddingBottom: '12px',
+              paddingBottom: '10px',
             }}
           >
             <h3
               style={{
-                fontSize: '20px',
+                fontSize: '17px',
                 fontWeight: 'bold',
                 color: colors.primary,
                 margin: 0,
                 display: 'flex',
                 alignItems: 'center',
-                gap: '8px',
+                gap: '6px',
               }}
             >
               {selectedCategory === 'all' && !searchQuery
                 ? lang === 'ar'
-                  ? '✨ منتجات مقترحة لك'
-                  : '✨ Recommended For You'
+                  ? '✨ مقترحة لك'
+                  : '✨ Recommended'
                 : `${lang === 'ar' ? 'قسم:' : 'Category:'} ${selectedCategory}`}
-              <span style={{ fontSize: '14px', color: colors.muted }}>
-                ({visibleProducts.length} من {allFilteredProducts.length} منتج)
+              <span style={{ fontSize: '12px', color: colors.muted }}>
+                ({visibleProducts.length})
               </span>
             </h3>
 
@@ -1155,27 +1187,29 @@ export default function Home() {
                   backgroundColor: colors.cardInner,
                   color: colors.primary,
                   border: `1px solid ${colors.border}`,
-                  padding: '6px 12px',
+                  padding: '5px 10px',
                   borderRadius: '8px',
-                  fontSize: '12px',
+                  fontSize: '11px',
                   fontWeight: 'bold',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '6px',
+                  gap: '4px',
                 }}
               >
-                🔄 {lang === 'ar' ? 'اقتراحات أخرى' : 'Shuffle'}
+                🔄 {lang === 'ar' ? 'اقتراحات' : 'Shuffle'}
               </button>
             )}
           </div>
 
-          {/* شبكة المنتجات */}
+          {/* شبكة المنتجات (ثابتة وعمودين على الموبايل لمنع أي تمدد) */}
           <div
+            className="products-grid"
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
-              gap: '20px',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
+              gap: '16px',
+              width: '100%',
             }}
           >
             {visibleProducts.map((p) => {
@@ -1184,11 +1218,12 @@ export default function Home() {
               return (
                 <div
                   key={p.id}
+                  className="product-card"
                   style={{
                     backgroundColor: colors.card,
                     border: `1px solid ${colors.border}`,
                     borderRadius: '16px',
-                    padding: '16px',
+                    padding: '14px',
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'space-between',
@@ -1199,14 +1234,14 @@ export default function Home() {
                     onClick={(e) => toggleWishlist(p, e)}
                     style={{
                       position: 'absolute',
-                      top: '22px',
-                      [lang === 'ar' ? 'left' : 'right']: '22px',
+                      top: '16px',
+                      [lang === 'ar' ? 'left' : 'right']: '16px',
                       background: 'rgba(0,0,0,0.6)',
                       backdropFilter: 'blur(4px)',
                       border: 'none',
                       borderRadius: '50%',
-                      width: '32px',
-                      height: '32px',
+                      width: '28px',
+                      height: '28px',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -1215,8 +1250,8 @@ export default function Home() {
                     }}
                   >
                     <svg
-                      width="18"
-                      height="18"
+                      width="15"
+                      height="15"
                       viewBox="0 0 24 24"
                       fill={isFav ? colors.heart : 'none'}
                       stroke={isFav ? colors.heart : '#ffffff'}
@@ -1236,12 +1271,13 @@ export default function Home() {
                     style={{ cursor: 'pointer' }}
                   >
                     <div
+                      className="product-img-box"
                       style={{
                         width: '100%',
-                        height: '180px',
+                        height: '160px',
                         backgroundColor: colors.cardInner,
-                        borderRadius: '12px',
-                        marginBottom: '12px',
+                        borderRadius: '10px',
+                        marginBottom: '10px',
                         overflow: 'hidden',
                         display: 'flex',
                         alignItems: 'center',
@@ -1265,14 +1301,21 @@ export default function Home() {
                         }}
                       />
                     </div>
-                    <span style={{ fontSize: '11px', color: colors.primary }}>
+                    <span style={{ fontSize: '10px', color: colors.primary }}>
                       {p.category || 'عام'}
                     </span>
                     <h4
+                      className="product-title"
                       style={{
-                        fontSize: '15px',
+                        fontSize: '13px',
                         fontWeight: 'bold',
-                        margin: '8px 0',
+                        margin: '6px 0',
+                        lineHeight: '1.4',
+                        height: '36px',
+                        overflow: 'hidden',
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical',
                       }}
                     >
                       {p.name}
@@ -1283,14 +1326,15 @@ export default function Home() {
                       display: 'flex',
                       justifyContent: 'space-between',
                       alignItems: 'center',
-                      marginTop: '12px',
+                      marginTop: '8px',
                       borderTop: `1px solid ${colors.border}`,
-                      paddingTop: '12px',
+                      paddingTop: '8px',
                     }}
                   >
                     <span
+                      className="product-price"
                       style={{
-                        fontSize: '16px',
+                        fontSize: '14px',
                         fontWeight: 'bold',
                         color: colors.primary,
                       }}
@@ -1298,6 +1342,7 @@ export default function Home() {
                       {formatIQD(Number(p.price))}
                     </span>
                     <button
+                      className="product-btn"
                       onClick={() => {
                         setSelectedProduct(p);
                         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1306,13 +1351,14 @@ export default function Home() {
                         backgroundColor: colors.primary,
                         color: colors.primaryText,
                         border: 'none',
-                        padding: '8px 14px',
+                        padding: '6px 12px',
                         borderRadius: '8px',
                         fontWeight: 'bold',
+                        fontSize: '11px',
                         cursor: 'pointer',
                       }}
                     >
-                      عرض التفاصيل
+                      عرض
                     </button>
                   </div>
                 </div>
@@ -1327,7 +1373,7 @@ export default function Home() {
               <div
                 style={{
                   textAlign: 'center',
-                  marginTop: '40px',
+                  marginTop: '30px',
                   marginBottom: '20px',
                 }}
               >
@@ -1337,16 +1383,16 @@ export default function Home() {
                     backgroundColor: colors.cardInner,
                     color: colors.primary,
                     border: `1.5px solid ${colors.primary}`,
-                    padding: '12px 36px',
+                    padding: '10px 24px',
                     borderRadius: '12px',
                     fontWeight: 'bold',
-                    fontSize: '15px',
+                    fontSize: '13px',
                     cursor: 'pointer',
                     boxShadow: '0 4px 15px rgba(0, 210, 255, 0.15)',
                   }}
                 >
                   {lang === 'ar'
-                    ? 'عرض المزيد من المنتجات المقترحة ➕'
+                    ? 'عرض المزيد من المنتجات ➕'
                     : 'Load More Products ➕'}
                 </button>
               </div>
