@@ -39,6 +39,14 @@ export default function ProductDetailsView({
 
   const images = extractImages(product.image_url);
 
+  const prevImage = () => {
+    setActiveImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+  };
+
+  const nextImage = () => {
+    setActiveImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+  };
+
   return (
     <div
       style={{
@@ -54,54 +62,83 @@ export default function ProductDetailsView({
           grid-template-columns: 460px 1fr;
           gap: 48px;
           margin-bottom: 36px;
-          align-items: center;
+          align-items: start;
         }
 
         .gallery-wrapper {
           display: flex;
-          gap: 14px;
-          align-items: center;
-        }
-
-        .thumbs-container {
-          display: flex;
           flex-direction: column;
-          gap: 10px;
-          max-height: 420px;
-          overflow-y: auto;
+          gap: 12px;
+          align-items: center;
+          width: 100%;
         }
 
         .main-img-container {
-          width: 420px;
-          height: 420px;
+          position: relative;
+          width: 100%;
+          height: 440px;
           background-color: #0d111a;
           border-radius: 18px;
           border: 1px solid #1e293b;
           display: flex;
           align-items: center;
           justify-content: center;
-          padding: 24px;
+          padding: 16px;
           box-sizing: border-box;
           overflow: hidden;
           box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+        }
+
+        .gallery-nav-btn {
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 36px;
+          height: 36px;
+          border-radius: 50%;
+          background: rgba(13, 17, 26, 0.75);
+          backdrop-filter: blur(4px);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          color: #fff;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          font-size: 16px;
+          font-weight: bold;
+          z-index: 5;
+          transition: all 0.2s ease;
+        }
+
+        .gallery-nav-btn:hover {
+          background: rgba(0, 0, 0, 0.95);
+          border-color: #f97316;
+          color: #f97316;
+        }
+
+        .thumbs-container {
+          display: flex;
+          flex-direction: row;
+          gap: 10px;
+          width: 100%;
+          overflow-x: auto;
+          padding-bottom: 6px;
+          scrollbar-width: thin;
+        }
+
+        .thumbs-container::-webkit-scrollbar {
+          height: 4px;
+        }
+
+        .thumbs-container::-webkit-scrollbar-thumb {
+          background: #334155;
+          border-radius: 4px;
         }
 
         @media (max-width: 900px) {
           .product-page-grid {
             grid-template-columns: 1fr !important;
             gap: 28px !important;
-          }
-          .gallery-wrapper {
-            flex-direction: column-reverse !important;
-            align-items: center !important;
-          }
-          .thumbs-container {
-            flex-direction: row !important;
-            max-height: none !important;
-            width: 100% !important;
-            justify-content: center;
-            overflow-x: auto !important;
-            padding-bottom: 8px;
           }
           .main-img-container {
             width: 100% !important;
@@ -172,8 +209,49 @@ export default function ProductDetailsView({
 
       {/* شبكة تفاصيل المنتج والمعرض */}
       <div className="product-page-grid">
-        {/* معرض الصور */}
+        {/* معرض الصور: تنقل دائري في الصورة مع شريط مصغر أفقي بالأسفل */}
         <div className="gallery-wrapper">
+          <div className="main-img-container">
+            {images.length > 1 && (
+              <>
+                <button
+                  type="button"
+                  onClick={prevImage}
+                  className="gallery-nav-btn"
+                  style={{ left: '12px' }}
+                >
+                  ‹
+                </button>
+                <button
+                  type="button"
+                  onClick={nextImage}
+                  className="gallery-nav-btn"
+                  style={{ right: '12px' }}
+                >
+                  ›
+                </button>
+              </>
+            )}
+
+            <img
+              src={images[activeImageIndex] || images[0]}
+              alt={product.name}
+              referrerPolicy="no-referrer"
+              crossOrigin="anonymous"
+              onError={(e: any) => {
+                e.target.onerror = null;
+                e.target.src = 'https://via.placeholder.com/600?text=EXOTECH';
+              }}
+              style={{
+                maxWidth: '100%',
+                maxHeight: '100%',
+                objectFit: 'contain',
+                filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.6))',
+                transition: 'opacity 0.2s ease',
+              }}
+            />
+          </div>
+
           {images.length > 1 && (
             <div className="thumbs-container">
               {images.map((imgUrl, idx) => (
@@ -195,6 +273,7 @@ export default function ProductDetailsView({
                     padding: '4px',
                     boxSizing: 'border-box',
                     transition: 'border-color 0.2s',
+                    flexShrink: 0,
                   }}
                 >
                   <img
@@ -217,25 +296,6 @@ export default function ProductDetailsView({
               ))}
             </div>
           )}
-
-          <div className="main-img-container">
-            <img
-              src={images[activeImageIndex] || images[0]}
-              alt={product.name}
-              referrerPolicy="no-referrer"
-              crossOrigin="anonymous"
-              onError={(e: any) => {
-                e.target.onerror = null;
-                e.target.src = 'https://via.placeholder.com/600?text=EXOTECH';
-              }}
-              style={{
-                maxWidth: '100%',
-                maxHeight: '100%',
-                objectFit: 'contain',
-                filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.6))',
-              }}
-            />
-          </div>
         </div>
 
         {/* معلومات المنتج، التسعير، والطلب */}
