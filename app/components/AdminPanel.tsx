@@ -60,7 +60,7 @@ export default function AdminPanel({
   const [newSubAr, setNewSubAr] = useState('');
   const [newSubEn, setNewSubEn] = useState('');
 
-  // حالة كروت أقسام الواجهة الرئيسية (إضافة وتعديل)
+  // حالة كروت أقسام الواجهة الرئيسية
   const [homeCatAr, setHomeCatAr] = useState('');
   const [homeCatEn, setHomeCatEn] = useState('');
   const [homeCatBg, setHomeCatBg] = useState('');
@@ -87,7 +87,7 @@ export default function AdminPanel({
 
   const handleRemoveImageField = (index: number) => {
     if (imageUrls.length > 1) {
-      setImageUrls(imageUrls.filter((_, i) => i !== index));
+      setImageUrls(imageUrls.filter((_, idx) => idx !== index));
     } else {
       setImageUrls(['']);
     }
@@ -1098,4 +1098,3 @@ export default function AdminPanel({
     </div>
   );
 }
-أ
