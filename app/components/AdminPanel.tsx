@@ -12,6 +12,10 @@ interface AdminPanelProps {
     subTitleEn: string
   ) => void;
   onDeleteSubcategory: (parentCatId: string, subId: string) => void;
+  homeCategories?: any[];
+  onAddHomeCategory?: (cat: any) => void;
+  onUpdateHomeCategory?: (cat: any) => void;
+  onDeleteHomeCategory?: (id: string) => void;
   products: any[];
   onSaveProduct: (payload: any, editingId: number | null) => Promise<void>;
   onDeleteProduct: (id: number) => Promise<void>;
@@ -26,6 +30,10 @@ export default function AdminPanel({
   onDeleteCategory,
   onAddSubcategory,
   onDeleteSubcategory,
+  homeCategories = [],
+  onAddHomeCategory,
+  onUpdateHomeCategory,
+  onDeleteHomeCategory,
   products,
   onSaveProduct,
   onDeleteProduct,
@@ -37,12 +45,11 @@ export default function AdminPanel({
   const [name, setName] = useState('');
   const [price, setPrice] = useState('');
   const [category, setCategory] = useState(categories[0]?.id || 'عام');
-  // مصفوفة صور تدعم حتى 10 صور
   const [imageUrls, setImageUrls] = useState<string[]>(['']);
   const [description, setDescription] = useState('');
   const [editingId, setEditingId] = useState<number | null>(null);
 
-  // حالة إضافة قسم رئيسي
+  // حالة إضافة قسم رئيسي للقائمة الجانبية
   const [newCatAr, setNewCatAr] = useState('');
   const [newCatEn, setNewCatEn] = useState('');
 
@@ -53,7 +60,13 @@ export default function AdminPanel({
   const [newSubAr, setNewSubAr] = useState('');
   const [newSubEn, setNewSubEn] = useState('');
 
-  // دوال التحكم بحقول الصور
+  // حالة كروت أقسام الواجهة الرئيسية (إضافة وتعديل)
+  const [homeCatAr, setHomeCatAr] = useState('');
+  const [homeCatEn, setHomeCatEn] = useState('');
+  const [homeCatBg, setHomeCatBg] = useState('');
+  const [editingHomeCatId, setEditingHomeCatId] = useState<string | null>(null);
+
+  // دوال حقول الصور للمنتج
   const handleAddImageField = () => {
     if (imageUrls.length < 10) {
       setImageUrls([...imageUrls, '']);
@@ -84,7 +97,6 @@ export default function AdminPanel({
     e.preventDefault();
     if (!name || !price) return alert('يرجى ملء الاسم والسعر');
 
-    // تنظيف ودمج روابط الصور
     const cleanImages = imageUrls
       .map((url) => url.trim())
       .filter((url) => url.length > 0);
@@ -93,7 +105,7 @@ export default function AdminPanel({
       name: name.trim(),
       price: Number(price),
       category: category.trim(),
-      image_url: cleanImages.join('\n'), // يتم الحفظ مفصولاً بسطر
+      image_url: cleanImages.join('\n'),
       description: description.trim(),
     };
     await onSaveProduct(payload, editingId);
@@ -115,7 +127,6 @@ export default function AdminPanel({
     setPrice(p.price?.toString() || '');
     setCategory(p.category || categories[0]?.id || 'عام');
 
-    // استخراج جميع الصور إلى الحقول
     if (Array.isArray(p.image_url)) {
       setImageUrls(p.image_url.length > 0 ? p.image_url : ['']);
     } else if (typeof p.image_url === 'string' && p.image_url.trim()) {
@@ -130,6 +141,45 @@ export default function AdminPanel({
 
     setDescription(p.description || '');
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // دوال التحكم بكروت الواجهة الرئيسية
+  const handleSaveHomeCategory = () => {
+    if (!homeCatAr.trim()) return alert('يرجى كتابة اسم القسم بالعربي');
+
+    const catPayload = {
+      id: editingHomeCatId || homeCatAr.trim(),
+      titleAr: homeCatAr.trim(),
+      titleEn: homeCatEn.trim() || homeCatAr.trim(),
+      bg:
+        homeCatBg.trim() ||
+        'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=400&q=80',
+    };
+
+    if (editingHomeCatId && onUpdateHomeCategory) {
+      onUpdateHomeCategory(catPayload);
+    } else if (onAddHomeCategory) {
+      onAddHomeCategory(catPayload);
+    }
+
+    setHomeCatAr('');
+    setHomeCatEn('');
+    setHomeCatBg('');
+    setEditingHomeCatId(null);
+  };
+
+  const startEditHomeCat = (cat: any) => {
+    setEditingHomeCatId(cat.id);
+    setHomeCatAr(cat.titleAr || '');
+    setHomeCatEn(cat.titleEn || '');
+    setHomeCatBg(cat.bg || '');
+  };
+
+  const cancelEditHomeCat = () => {
+    setEditingHomeCatId(null);
+    setHomeCatAr('');
+    setHomeCatEn('');
+    setHomeCatBg('');
   };
 
   return (
@@ -153,7 +203,188 @@ export default function AdminPanel({
         {lang === 'ar' ? 'لوحة تحكم وإدارة EXOTECH' : 'EXOTECH Admin Dashboard'}
       </h1>
 
-      {/* إدارة الأقسام الرئيسية والفرعية */}
+      {/* قسم إضافة وتعديل كروت الواجهة الرئيسية */}
+      <div
+        style={{
+          backgroundColor: colors.surface,
+          border: `1px solid ${colors.border}`,
+          borderRadius: '14px',
+          padding: '20px',
+          marginBottom: '32px',
+        }}
+      >
+        <h3
+          style={{
+            fontSize: '16px',
+            fontWeight: 'bold',
+            marginBottom: '14px',
+            color: colors.primary,
+          }}
+        >
+          🎴{' '}
+          {editingHomeCatId
+            ? lang === 'ar'
+              ? 'تعديل كرت في الواجهة الرئيسية'
+              : 'Edit Home Category Card'
+            : lang === 'ar'
+            ? 'إدارة كروت الأقسام في الواجهة الرئيسية'
+            : 'Home Category Cards'}
+        </h3>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+            gap: '10px',
+            marginBottom: '16px',
+          }}
+        >
+          <input
+            type="text"
+            placeholder="اسم الكرت بالعربي (مثال: مايكات احترافية)"
+            value={homeCatAr}
+            onChange={(e) => setHomeCatAr(e.target.value)}
+            style={{
+              padding: '10px',
+              borderRadius: '8px',
+              backgroundColor: colors.cardInner,
+              border: `1px solid ${colors.border}`,
+              color: '#fff',
+            }}
+          />
+          <input
+            type="text"
+            placeholder="الاسم بالإنكليزي (مثال: Microphones)"
+            value={homeCatEn}
+            onChange={(e) => setHomeCatEn(e.target.value)}
+            style={{
+              padding: '10px',
+              borderRadius: '8px',
+              backgroundColor: colors.cardInner,
+              border: `1px solid ${colors.border}`,
+              color: '#fff',
+            }}
+          />
+          <input
+            type="text"
+            placeholder="رابط صورة الخلفية (Image URL)"
+            value={homeCatBg}
+            onChange={(e) => setHomeCatBg(e.target.value)}
+            style={{
+              padding: '10px',
+              borderRadius: '8px',
+              backgroundColor: colors.cardInner,
+              border: `1px solid ${colors.border}`,
+              color: '#fff',
+            }}
+          />
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button
+              onClick={handleSaveHomeCategory}
+              style={{
+                flex: 1,
+                backgroundColor: colors.primary,
+                color: colors.primaryText,
+                padding: '10px',
+                borderRadius: '8px',
+                fontWeight: 'bold',
+                border: 'none',
+                cursor: 'pointer',
+              }}
+            >
+              {editingHomeCatId ? '💾 حفظ التعديل' : '➕ إضافة كرت'}
+            </button>
+            {editingHomeCatId && (
+              <button
+                onClick={cancelEditHomeCat}
+                style={{
+                  backgroundColor: colors.cardInner,
+                  color: colors.muted,
+                  padding: '10px 14px',
+                  borderRadius: '8px',
+                  border: `1px solid ${colors.border}`,
+                  cursor: 'pointer',
+                }}
+              >
+                إلغاء
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* استعراض كروت الواجهة وتعديلها وحذفها */}
+        <div
+          style={{
+            display: 'flex',
+            gap: '10px',
+            overflowX: 'auto',
+            paddingBottom: '8px',
+          }}
+        >
+          {homeCategories.map((hCat) => (
+            <div
+              key={hCat.id}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                backgroundColor: colors.cardInner,
+                padding: '6px 12px',
+                borderRadius: '8px',
+                border: `1px solid ${
+                  editingHomeCatId === hCat.id ? colors.primary : colors.border
+                }`,
+                flexShrink: 0,
+              }}
+            >
+              <img
+                src={hCat.bg}
+                alt={hCat.titleAr}
+                style={{
+                  width: '24px',
+                  height: '24px',
+                  borderRadius: '4px',
+                  objectFit: 'cover',
+                }}
+              />
+              <span
+                style={{ fontSize: '12px', fontWeight: 'bold', color: '#fff' }}
+              >
+                {hCat.titleAr}
+              </span>
+              <button
+                onClick={() => startEditHomeCat(hCat)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: colors.primary,
+                  cursor: 'pointer',
+                  fontSize: '12px',
+                  fontWeight: 'bold',
+                }}
+              >
+                ✏️
+              </button>
+              {hCat.id !== 'all' && onDeleteHomeCategory && (
+                <button
+                  onClick={() => onDeleteHomeCategory(hCat.id)}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: '#ef4444',
+                    cursor: 'pointer',
+                    fontSize: '12px',
+                    fontWeight: 'bold',
+                  }}
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* إدارة الأقسام الرئيسية والفرعية للقائمة الجانبية */}
       <div
         style={{
           display: 'grid',
@@ -867,3 +1098,4 @@ export default function AdminPanel({
     </div>
   );
 }
+أ
