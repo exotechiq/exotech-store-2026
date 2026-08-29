@@ -37,7 +37,8 @@ export default function AdminPanel({
   const [name, setName] = useState('');
   const [price, setPrice] = useState('');
   const [category, setCategory] = useState(categories[0]?.id || 'عام');
-  const [imageUrl, setImageUrl] = useState('');
+  // مصفوفة صور تدعم حتى 10 صور
+  const [imageUrls, setImageUrls] = useState<string[]>(['']);
   const [description, setDescription] = useState('');
   const [editingId, setEditingId] = useState<number | null>(null);
 
@@ -52,14 +53,47 @@ export default function AdminPanel({
   const [newSubAr, setNewSubAr] = useState('');
   const [newSubEn, setNewSubEn] = useState('');
 
+  // دوال التحكم بحقول الصور
+  const handleAddImageField = () => {
+    if (imageUrls.length < 10) {
+      setImageUrls([...imageUrls, '']);
+    } else {
+      alert(
+        lang === 'ar'
+          ? 'الحد الأقصى هو 10 صور للمنتج الواحد'
+          : 'Maximum 10 images allowed'
+      );
+    }
+  };
+
+  const handleUpdateImageUrl = (index: number, value: string) => {
+    const updated = [...imageUrls];
+    updated[index] = value;
+    setImageUrls(updated);
+  };
+
+  const handleRemoveImageField = (index: number) => {
+    if (imageUrls.length > 1) {
+      setImageUrls(imageUrls.filter((_, i) => i !== index));
+    } else {
+      setImageUrls(['']);
+    }
+  };
+
   const handleSubmitProduct = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !price) return alert('يرجى ملء الاسم والسعر');
+
+    // تنظيف ودمج روابط الصور
+    const cleanImages = imageUrls
+      .map((url) => url.trim())
+      .filter((url) => url.length > 0);
+
     const payload = {
       name: name.trim(),
       price: Number(price),
       category: category.trim(),
-      image_url: imageUrl.trim(),
+      image_url: cleanImages.join('\n'), // يتم الحفظ مفصولاً بسطر
       description: description.trim(),
     };
     await onSaveProduct(payload, editingId);
@@ -70,7 +104,7 @@ export default function AdminPanel({
     setName('');
     setPrice('');
     setCategory(categories[0]?.id || 'عام');
-    setImageUrl('');
+    setImageUrls(['']);
     setDescription('');
     setEditingId(null);
   };
@@ -80,9 +114,20 @@ export default function AdminPanel({
     setName(p.name || '');
     setPrice(p.price?.toString() || '');
     setCategory(p.category || categories[0]?.id || 'عام');
-    setImageUrl(
-      Array.isArray(p.image_url) ? p.image_url.join('\n') : p.image_url || ''
-    );
+
+    // استخراج جميع الصور إلى الحقول
+    if (Array.isArray(p.image_url)) {
+      setImageUrls(p.image_url.length > 0 ? p.image_url : ['']);
+    } else if (typeof p.image_url === 'string' && p.image_url.trim()) {
+      const parsed = p.image_url
+        .split(/[\n,]+/)
+        .map((s: string) => s.trim())
+        .filter((s: string) => s.length > 0);
+      setImageUrls(parsed.length > 0 ? parsed : ['']);
+    } else {
+      setImageUrls(['']);
+    }
+
     setDescription(p.description || '');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -417,7 +462,7 @@ export default function AdminPanel({
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
               gap: '14px',
             }}
           >
@@ -449,15 +494,6 @@ export default function AdminPanel({
                 color: '#fff',
               }}
             />
-          </div>
-
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              gap: '14px',
-            }}
-          >
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value)}
@@ -482,20 +518,151 @@ export default function AdminPanel({
                   </optgroup>
                 ))}
             </select>
+          </div>
 
-            <input
-              type="text"
-              placeholder="رابط الصورة (Image URL)"
-              value={imageUrl}
-              onChange={(e) => setImageUrl(e.target.value)}
+          {/* قسم إدخال صور متعددة حتى 10 صور */}
+          <div
+            style={{
+              backgroundColor: colors.cardInner,
+              border: `1px solid ${colors.border}`,
+              borderRadius: '10px',
+              padding: '16px',
+            }}
+          >
+            <div
               style={{
-                padding: '12px',
-                borderRadius: '8px',
-                backgroundColor: colors.cardInner,
-                border: `1px solid ${colors.border}`,
-                color: '#fff',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '12px',
               }}
-            />
+            >
+              <span
+                style={{
+                  fontSize: '13px',
+                  fontWeight: 'bold',
+                  color: colors.primary,
+                }}
+              >
+                🖼️ صور المنتج (أضف حتى 10 صور) - [{' '}
+                {imageUrls.filter((u) => u.trim()).length} / 10 ]
+              </span>
+              {imageUrls.length < 10 && (
+                <button
+                  type="button"
+                  onClick={handleAddImageField}
+                  style={{
+                    backgroundColor: colors.primary,
+                    color: colors.primaryText,
+                    border: 'none',
+                    padding: '6px 12px',
+                    borderRadius: '6px',
+                    fontSize: '12px',
+                    fontWeight: 'bold',
+                    cursor: 'pointer',
+                  }}
+                >
+                  ➕ إضافة صورة أخرى
+                </button>
+              )}
+            </div>
+
+            <div
+              style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}
+            >
+              {imageUrls.map((url, idx) => (
+                <div
+                  key={idx}
+                  style={{ display: 'flex', gap: '8px', alignItems: 'center' }}
+                >
+                  <span
+                    style={{
+                      fontSize: '12px',
+                      color: colors.muted,
+                      width: '22px',
+                    }}
+                  >
+                    #{idx + 1}
+                  </span>
+                  <input
+                    type="text"
+                    placeholder={`رابط الصورة ${idx + 1} (Image URL)`}
+                    value={url}
+                    onChange={(e) => handleUpdateImageUrl(idx, e.target.value)}
+                    style={{
+                      flex: 1,
+                      padding: '10px 12px',
+                      borderRadius: '8px',
+                      backgroundColor: colors.surface,
+                      border: `1px solid ${colors.border}`,
+                      color: '#fff',
+                      fontSize: '13px',
+                    }}
+                  />
+                  {imageUrls.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveImageField(idx)}
+                      style={{
+                        backgroundColor: '#ef444422',
+                        color: '#ef4444',
+                        border: '1px solid #ef444444',
+                        padding: '8px 12px',
+                        borderRadius: '8px',
+                        cursor: 'pointer',
+                        fontSize: '12px',
+                        fontWeight: 'bold',
+                      }}
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {/* معاينة مصغرة للصور المضافة */}
+            <div
+              style={{
+                display: 'flex',
+                gap: '8px',
+                overflowX: 'auto',
+                marginTop: '12px',
+                paddingTop: '8px',
+                borderTop: `1px solid ${colors.border}`,
+              }}
+            >
+              {imageUrls.map(
+                (url, i) =>
+                  url.trim() && (
+                    <div
+                      key={i}
+                      style={{
+                        width: '50px',
+                        height: '50px',
+                        borderRadius: '6px',
+                        overflow: 'hidden',
+                        backgroundColor: colors.surface,
+                        border: `1px solid ${colors.border}`,
+                        flexShrink: 0,
+                      }}
+                    >
+                      <img
+                        src={url}
+                        alt={`preview ${i}`}
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'contain',
+                        }}
+                        onError={(e: any) => {
+                          e.target.style.display = 'none';
+                        }}
+                      />
+                    </div>
+                  )
+              )}
+            </div>
           </div>
 
           <textarea
@@ -593,72 +760,107 @@ export default function AdminPanel({
             </tr>
           </thead>
           <tbody>
-            {products.map((p) => (
-              <tr
-                key={p.id}
-                style={{ borderBottom: `1px solid ${colors.border}` }}
-              >
-                <td style={{ padding: '10px' }}>
-                  <img
-                    src={
-                      p.image_url?.split(/[\n,]+/)[0] ||
-                      'https://via.placeholder.com/60'
-                    }
-                    alt={p.name}
-                    style={{
-                      width: '40px',
-                      height: '40px',
-                      objectFit: 'contain',
-                      borderRadius: '6px',
-                    }}
-                  />
-                </td>
-                <td style={{ padding: '10px', fontWeight: 'bold' }}>
-                  {p.name}
-                </td>
-                <td style={{ padding: '10px', color: colors.primary }}>
-                  {p.category}
-                </td>
-                <td
-                  style={{
-                    padding: '10px',
-                    fontWeight: 'bold',
-                    color: '#f97316',
-                  }}
+            {products.map((p) => {
+              const productImages = p.image_url
+                ? typeof p.image_url === 'string'
+                  ? p.image_url
+                      .split(/[\n,]+/)
+                      .map((s: string) => s.trim())
+                      .filter(Boolean)
+                  : Array.isArray(p.image_url)
+                  ? p.image_url
+                  : []
+                : [];
+
+              return (
+                <tr
+                  key={p.id}
+                  style={{ borderBottom: `1px solid ${colors.border}` }}
                 >
-                  {formatIQD(Number(p.price))}
-                </td>
-                <td style={{ padding: '10px', textAlign: 'center' }}>
-                  <button
-                    onClick={() => startEdit(p)}
+                  <td style={{ padding: '10px' }}>
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                      }}
+                    >
+                      <img
+                        src={
+                          productImages[0] || 'https://via.placeholder.com/60'
+                        }
+                        alt={p.name}
+                        style={{
+                          width: '40px',
+                          height: '40px',
+                          objectFit: 'contain',
+                          borderRadius: '6px',
+                          backgroundColor: colors.cardInner,
+                        }}
+                      />
+                      {productImages.length > 1 && (
+                        <span
+                          style={{
+                            fontSize: '10px',
+                            color: colors.primary,
+                            backgroundColor: colors.cardInner,
+                            padding: '2px 5px',
+                            borderRadius: '4px',
+                            border: `1px solid ${colors.border}`,
+                          }}
+                        >
+                          +{productImages.length - 1}
+                        </span>
+                      )}
+                    </div>
+                  </td>
+                  <td style={{ padding: '10px', fontWeight: 'bold' }}>
+                    {p.name}
+                  </td>
+                  <td style={{ padding: '10px', color: colors.primary }}>
+                    {p.category}
+                  </td>
+                  <td
                     style={{
-                      backgroundColor: colors.cardInner,
-                      color: colors.primary,
-                      border: `1px solid ${colors.border}`,
-                      padding: '4px 10px',
-                      borderRadius: '6px',
-                      cursor: 'pointer',
-                      marginLeft: '6px',
+                      padding: '10px',
+                      fontWeight: 'bold',
+                      color: '#f97316',
                     }}
                   >
-                    تعديل
-                  </button>
-                  <button
-                    onClick={() => onDeleteProduct(p.id)}
-                    style={{
-                      backgroundColor: '#ef444422',
-                      color: '#ef4444',
-                      border: '1px solid #ef444455',
-                      padding: '4px 10px',
-                      borderRadius: '6px',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    حذف
-                  </button>
-                </td>
-              </tr>
-            ))}
+                    {formatIQD(Number(p.price))}
+                  </td>
+                  <td style={{ padding: '10px', textAlign: 'center' }}>
+                    <button
+                      onClick={() => startEdit(p)}
+                      style={{
+                        backgroundColor: colors.cardInner,
+                        color: colors.primary,
+                        border: `1px solid ${colors.border}`,
+                        padding: '4px 10px',
+                        borderRadius: '6px',
+                        cursor: 'pointer',
+                        marginLeft: '6px',
+                      }}
+                    >
+                      تعديل
+                    </button>
+                    <button
+                      onClick={() => onDeleteProduct(p.id)}
+                      style={{
+                        backgroundColor: '#ef444422',
+                        color: '#ef4444',
+                        border: '1px solid #ef444455',
+                        padding: '4px 10px',
+                        borderRadius: '6px',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      حذف
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
