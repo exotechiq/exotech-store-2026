@@ -23,6 +23,7 @@ const INITIAL_CATEGORIES: CategoryItem[] = [
   },
   { id: 'محولات', titleAr: 'محولات', titleEn: 'Adapters & Converters' },
   { id: 'الصوت', titleAr: 'الصوت', titleEn: 'Audio & Sound' },
+  { id: 'مايكات', titleAr: 'مايكات واحترافية', titleEn: 'Microphones' },
   { id: 'حقائب', titleAr: 'حقائب', titleEn: 'Bags & Cases' },
   { id: 'كيبلات', titleAr: 'كيبلات', titleEn: 'Cables & Wires' },
   {
@@ -95,6 +96,7 @@ const INITIAL_CATEGORIES: CategoryItem[] = [
   { id: 'عطور', titleAr: 'عطور', titleEn: 'Perfumes' },
 ];
 
+// الأقسام المكتملة مع الإضافات الجديدة
 const CATEGORIES_DATA = [
   {
     id: 'all',
@@ -111,14 +113,50 @@ const CATEGORIES_DATA = [
   {
     id: 'تجميعات',
     titleAr: 'تجميعات كمبيوتر',
-    titleEn: 'Builds',
+    titleEn: 'PC Builds',
     bg: 'https://images.unsplash.com/photo-1587202372634-32705e3bf49c?auto=format&fit=crop&w=400&q=80',
   },
   {
     id: 'شاشات',
     titleAr: 'شاشات وأجهزة عرض',
     titleEn: 'Monitors',
-    bg: 'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?auto=format&fit=crop&w=400&q=80',
+    bg: 'https://images.unsplash.com/photo-1593305841991-05c297ba4575?auto=format&fit=crop&w=400&q=80',
+  },
+  {
+    id: 'لوحات المفاتيح',
+    titleAr: 'لوحات المفاتيح',
+    titleEn: 'Keyboards',
+    bg: 'https://images.unsplash.com/photo-1587829741301-dc798b83add3?auto=format&fit=crop&w=400&q=80',
+  },
+  {
+    id: 'الفأرات',
+    titleAr: 'الفأرات (Mouse)',
+    titleEn: 'Gaming Mice',
+    bg: 'https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?auto=format&fit=crop&w=400&q=80',
+  },
+  {
+    id: 'مايكات',
+    titleAr: 'مايكات احترافية',
+    titleEn: 'Microphones',
+    bg: 'https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&w=400&q=80',
+  },
+  {
+    id: 'الصوت',
+    titleAr: 'سماعات وصوتيات',
+    titleEn: 'Headsets & Audio',
+    bg: 'https://images.unsplash.com/photo-1546435770-a3e426bf472b?auto=format&fit=crop&w=400&q=80',
+  },
+  {
+    id: 'إكسسوارات الألعاب',
+    titleAr: 'إكسسوارات الألعاب',
+    titleEn: 'Gaming Accessories',
+    bg: 'https://images.unsplash.com/photo-1600080972464-8e5f35f63d08?auto=format&fit=crop&w=400&q=80',
+  },
+  {
+    id: 'لابتوبات وحاسبات',
+    titleAr: 'لابتوبات وحاسبات',
+    titleEn: 'Laptops',
+    bg: 'https://images.unsplash.com/photo-1603302576837-37561b2e2302?auto=format&fit=crop&w=400&q=80',
   },
   {
     id: 'تخزين',
@@ -445,7 +483,7 @@ export default function Home() {
         minHeight: '100vh',
         width: '100%',
         maxWidth: '100vw',
-        overflowX: 'hidden', // يمنع خروج الموقع أو اهتزازه يمنة ويسرة
+        overflowX: 'hidden',
         backgroundColor: colors.bg,
         color: colors.text,
         fontFamily: 'sans-serif',
@@ -462,8 +500,37 @@ export default function Home() {
           100% { color: #00d2ff; text-shadow: 0 0 12px rgba(0, 210, 255, 0.8); }
         }
         .rgb-logo { animation: rgbGlow 6s linear infinite; }
-        
-        @media (max-width: 640px) {
+
+        /* شريط التمرير الأفقي للأقسام (Scrollable Row) */
+        .categories-scroll-row {
+          display: flex;
+          gap: 14px;
+          overflow-x: auto;
+          padding-bottom: 14px;
+          margin-bottom: 34px;
+          width: 100%;
+          scrollbar-width: thin;
+        }
+        .categories-scroll-row::-webkit-scrollbar {
+          height: 6px;
+        }
+        .categories-scroll-row::-webkit-scrollbar-thumb {
+          background: #1e293b;
+          border-radius: 6px;
+        }
+        .cat-card-item {
+          width: 130px;
+          min-width: 130px;
+          height: 250px;
+          border-radius: 16px;
+        }
+        .cat-card-text {
+          font-size: 16px;
+          letter-spacing: 1px;
+        }
+
+        /* ستايل الموبايل */
+        @media (max-width: 768px) {
           .banner-container { height: 180px !important; margin-bottom: 20px !important; border-radius: 14px !important; }
           .banner-title { font-size: 16px !important; margin-bottom: 4px !important; }
           .banner-desc { font-size: 11px !important; line-height: 1.4 !important; }
@@ -471,6 +538,9 @@ export default function Home() {
           .header-container { padding: 10px 12px !important; }
           .site-title { font-size: 19px !important; }
           .btn-text-hide { display: none !important; }
+          .categories-scroll-row { gap: 10px !important; margin-bottom: 24px !important; }
+          .cat-card-item { width: 95px !important; min-width: 95px !important; height: 180px !important; border-radius: 14px !important; }
+          .cat-card-text { font-size: 13.5px !important; letter-spacing: 0.5px !important; }
           .products-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 10px !important; }
           .product-card { padding: 10px !important; border-radius: 12px !important; }
           .product-img-box { height: 120px !important; margin-bottom: 8px !important; }
@@ -491,7 +561,7 @@ export default function Home() {
         colors={colors}
       />
 
-      {/* القائمة الجانبية الهرمية - مثبتة على اليمين */}
+      {/* القائمة الجانبية الهرمية */}
       <SidebarDrawer
         isOpen={isDrawerOpen}
         onClose={() => setIsDrawerOpen(false)}
@@ -693,12 +763,12 @@ export default function Home() {
         chatId={TELEGRAM_CHAT_ID}
       />
 
-      {/* الهيدر المتجاوب */}
+      {/* الهيدر */}
       <header
         className="header-container"
         style={{
           borderBottom: `1px solid ${colors.border}`,
-          padding: '14px 20px',
+          padding: '14px 24px',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
@@ -709,14 +779,14 @@ export default function Home() {
           width: '100%',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <button
             onClick={() => setIsDrawerOpen(true)}
             style={{
               backgroundColor: colors.cardInner,
               color: colors.text,
               border: `1px solid ${colors.border}`,
-              padding: '6px 10px',
+              padding: '8px 12px',
               borderRadius: '8px',
               cursor: 'pointer',
               fontSize: '16px',
@@ -734,7 +804,7 @@ export default function Home() {
             }}
             className="rgb-logo site-title"
             style={{
-              fontSize: '24px',
+              fontSize: '26px',
               fontWeight: '900',
               letterSpacing: '1px',
               cursor: 'pointer',
@@ -745,7 +815,7 @@ export default function Home() {
           </h1>
         </div>
 
-        <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
           {currentUser ? (
             <div
               style={{
@@ -753,17 +823,17 @@ export default function Home() {
                 alignItems: 'center',
                 gap: '4px',
                 backgroundColor: colors.cardInner,
-                padding: '4px 8px',
+                padding: '5px 10px',
                 borderRadius: '8px',
                 border: `1px solid ${colors.border}`,
               }}
             >
               <span
                 style={{
-                  fontSize: '11px',
+                  fontSize: '12px',
                   fontWeight: 'bold',
                   color: colors.primary,
-                  maxWidth: '80px',
+                  maxWidth: '100px',
                   whiteSpace: 'nowrap',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
@@ -793,14 +863,14 @@ export default function Home() {
                 backgroundColor: colors.cardInner,
                 color: colors.text,
                 border: `1px solid ${colors.border}`,
-                padding: '6px 10px',
+                padding: '7px 12px',
                 borderRadius: '8px',
                 cursor: 'pointer',
-                fontSize: '12px',
+                fontSize: '12.5px',
                 fontWeight: 'bold',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '4px',
+                gap: '5px',
               }}
             >
               <span>👤</span>
@@ -816,10 +886,10 @@ export default function Home() {
               backgroundColor: colors.cardInner,
               color: colors.text,
               border: `1px solid ${colors.border}`,
-              padding: '6px 10px',
+              padding: '7px 12px',
               borderRadius: '8px',
               cursor: 'pointer',
-              fontSize: '11px',
+              fontSize: '12px',
               fontWeight: 'bold',
             }}
           >
@@ -832,19 +902,19 @@ export default function Home() {
               backgroundColor: colors.cardInner,
               color: wishlist.length > 0 ? colors.heart : colors.muted,
               border: `1px solid ${colors.border}`,
-              padding: '6px 10px',
+              padding: '7px 12px',
               borderRadius: '8px',
               cursor: 'pointer',
               fontSize: '13px',
               display: 'flex',
               alignItems: 'center',
-              gap: '3px',
+              gap: '4px',
               fontWeight: 'bold',
             }}
           >
             <svg
-              width="15"
-              height="15"
+              width="16"
+              height="16"
               viewBox="0 0 24 24"
               fill={wishlist.length > 0 ? colors.heart : 'none'}
               stroke={colors.heart}
@@ -867,11 +937,11 @@ export default function Home() {
                 backgroundColor: colors.cardInner,
                 color: colors.primary,
                 border: `1px solid ${colors.border}`,
-                padding: '6px 12px',
+                padding: '7px 14px',
                 borderRadius: '8px',
                 cursor: 'pointer',
                 fontWeight: 'bold',
-                fontSize: '11px',
+                fontSize: '12px',
               }}
             >
               العودة للمتجر
@@ -885,19 +955,19 @@ export default function Home() {
                 backgroundColor: colors.primary,
                 color: colors.primaryText,
                 border: 'none',
-                padding: '6px 12px',
+                padding: '7px 14px',
                 borderRadius: '8px',
                 cursor: 'pointer',
                 fontWeight: 'bold',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '4px',
-                fontSize: '12px',
+                gap: '6px',
+                fontSize: '13px',
               }}
             >
               <svg
-                width="15"
-                height="15"
+                width="16"
+                height="16"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -954,9 +1024,9 @@ export default function Home() {
       ) : (
         <main
           style={{
-            maxWidth: '1280px',
+            maxWidth: '1340px',
             margin: '0 auto',
-            padding: '16px 12px 0 12px',
+            padding: '20px 16px 0 16px',
             width: '100%',
             overflowX: 'hidden',
           }}
@@ -966,10 +1036,10 @@ export default function Home() {
             className="banner-container"
             style={{
               position: 'relative',
-              height: '280px',
-              borderRadius: '16px',
+              height: '320px',
+              borderRadius: '20px',
               overflow: 'hidden',
-              marginBottom: '24px',
+              marginBottom: '28px',
               border: `1px solid ${colors.border}`,
               backgroundColor: '#0c0f17',
               width: '100%',
@@ -997,7 +1067,7 @@ export default function Home() {
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'center',
-                  padding: '0 32px',
+                  padding: '0 40px',
                   zIndex: index === currentSlide ? 1 : 0,
                   pointerEvents: index === currentSlide ? 'auto' : 'none',
                 }}
@@ -1005,10 +1075,10 @@ export default function Home() {
                 <h2
                   className="banner-title"
                   style={{
-                    fontSize: '26px',
+                    fontSize: '30px',
                     fontWeight: '900',
                     color: '#fff',
-                    margin: '0 0 6px 0',
+                    margin: '0 0 8px 0',
                     textShadow: '0 2px 10px rgba(0,0,0,0.7)',
                   }}
                 >
@@ -1017,7 +1087,7 @@ export default function Home() {
                 <p
                   className="banner-desc"
                   style={{
-                    fontSize: '13px',
+                    fontSize: '14.5px',
                     color: '#cbd5e1',
                     margin: 0,
                     textShadow: '0 1px 6px rgba(0,0,0,0.7)',
@@ -1032,7 +1102,7 @@ export default function Home() {
             <div
               style={{
                 position: 'absolute',
-                bottom: '10px',
+                bottom: '12px',
                 left: '50%',
                 transform: 'translateX(-50%)',
                 display: 'flex',
@@ -1045,7 +1115,7 @@ export default function Home() {
                   key={i}
                   onClick={() => setCurrentSlide(i)}
                   style={{
-                    width: i === currentSlide ? '20px' : '6px',
+                    width: i === currentSlide ? '24px' : '6px',
                     height: '6px',
                     borderRadius: '3px',
                     backgroundColor:
@@ -1062,13 +1132,11 @@ export default function Home() {
             </div>
           </div>
 
-          {/* شريط البحث */}
+          {/* شريط البحث المطور */}
           <div
             style={{
-              maxWidth: '750px',
-              margin: '0 auto 20px auto',
-              display: 'flex',
-              gap: '10px',
+              maxWidth: '850px',
+              margin: '0 auto 28px auto',
               width: '100%',
             }}
           >
@@ -1081,68 +1149,84 @@ export default function Home() {
               }}
               placeholder="ابحث عن منتج، قطعة، قسم، أو علامة تجارية..."
               style={{
-                flex: 1,
                 width: '100%',
-                padding: '12px 16px',
-                borderRadius: '12px',
-                border: `1px solid ${colors.border}`,
+                padding: '14px 22px',
+                fontSize: '14.5px',
+                borderRadius: '14px',
+                border: `1.5px solid ${colors.border}`,
                 backgroundColor: colors.surface,
                 color: colors.text,
-                fontSize: '13px',
                 outline: 'none',
+                boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
               }}
             />
           </div>
 
-          {/* الأقسام الأفقية مع شريط تمرير سلس ومحكوم */}
+          {/* شريط الأقسام الأفقي القابل للتمرير والسحب */}
           <div
+            className="categories-scroll-row"
             style={{
-              display: 'flex',
-              gap: '10px',
-              overflowX: 'auto',
-              paddingBottom: '12px',
-              marginBottom: '24px',
-              width: '100%',
               WebkitOverflowScrolling: 'touch',
             }}
           >
-            {CATEGORIES_DATA.map((cat) => (
-              <div
-                key={cat.id}
-                onClick={() => {
-                  setSelectedCategory(cat.id);
-                  setVisibleCount(24);
-                }}
-                style={{
-                  minWidth: '95px',
-                  height: '180px',
-                  borderRadius: '14px',
-                  backgroundImage: `linear-gradient(to top, rgba(7, 9, 14, 0.95), rgba(7, 9, 14, 0.2)), url(${cat.bg})`,
-                  backgroundSize: 'cover',
-                  border:
-                    selectedCategory.toLowerCase() === cat.id.toLowerCase()
-                      ? `2px solid ${colors.primary}`
-                      : '1px solid rgba(255,255,255,0.1)',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  flexShrink: 0,
-                }}
-              >
-                <span
+            {CATEGORIES_DATA.map((cat) => {
+              const isSelected =
+                selectedCategory.toLowerCase() === cat.id.toLowerCase();
+              return (
+                <div
+                  key={cat.id}
+                  onClick={() => {
+                    setSelectedCategory(cat.id);
+                    setVisibleCount(24);
+                  }}
+                  className="cat-card-item"
                   style={{
-                    writingMode: 'vertical-rl',
-                    color: '#fff',
-                    fontSize: '15px',
-                    fontWeight: '800',
-                    transform: 'rotate(180deg)',
+                    backgroundImage: `linear-gradient(to top, rgba(7, 9, 14, 0.95), rgba(7, 9, 14, 0.25)), url(${cat.bg})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    border: isSelected
+                      ? `2px solid ${colors.primary}`
+                      : '1px solid rgba(255,255,255,0.12)',
+                    cursor: 'pointer',
+                    position: 'relative',
+                    overflow: 'hidden',
+                    transition: 'all 0.3s ease',
+                    flexShrink: 0,
+                    boxShadow: isSelected
+                      ? '0 0 20px rgba(0, 210, 255, 0.4)'
+                      : '0 4px 15px rgba(0,0,0,0.3)',
                   }}
                 >
-                  {lang === 'ar' ? cat.titleAr : cat.titleEn}
-                </span>
-              </div>
-            ))}
+                  <div
+                    style={{
+                      position: 'absolute',
+                      inset: 0,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <span
+                      className="cat-card-text"
+                      style={{
+                        transform: 'rotate(-90deg)',
+                        transformOrigin: 'center center',
+                        whiteSpace: 'nowrap',
+                        color: isSelected ? colors.primary : '#ffffff',
+                        fontWeight: '800',
+                        textShadow: '0 2px 10px rgba(0,0,0,0.95)',
+                        userSelect: 'none',
+                        display: 'block',
+                        width: '230px',
+                        textAlign: 'center',
+                      }}
+                    >
+                      {lang === 'ar' ? cat.titleAr : cat.titleEn}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
           </div>
 
           {/* رأس قسم المنتجات */}
@@ -1151,20 +1235,20 @@ export default function Home() {
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
-              marginBottom: '16px',
+              marginBottom: '18px',
               borderBottom: `1px solid ${colors.border}`,
-              paddingBottom: '10px',
+              paddingBottom: '12px',
             }}
           >
             <h3
               style={{
-                fontSize: '17px',
+                fontSize: '19px',
                 fontWeight: 'bold',
                 color: colors.primary,
                 margin: 0,
                 display: 'flex',
                 alignItems: 'center',
-                gap: '6px',
+                gap: '8px',
               }}
             >
               {selectedCategory === 'all' && !searchQuery
@@ -1172,7 +1256,7 @@ export default function Home() {
                   ? '✨ مقترحة لك'
                   : '✨ Recommended'
                 : `${lang === 'ar' ? 'قسم:' : 'Category:'} ${selectedCategory}`}
-              <span style={{ fontSize: '12px', color: colors.muted }}>
+              <span style={{ fontSize: '13px', color: colors.muted }}>
                 ({visibleProducts.length})
               </span>
             </h3>
@@ -1187,14 +1271,14 @@ export default function Home() {
                   backgroundColor: colors.cardInner,
                   color: colors.primary,
                   border: `1px solid ${colors.border}`,
-                  padding: '5px 10px',
+                  padding: '6px 12px',
                   borderRadius: '8px',
-                  fontSize: '11px',
+                  fontSize: '12px',
                   fontWeight: 'bold',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '4px',
+                  gap: '6px',
                 }}
               >
                 🔄 {lang === 'ar' ? 'اقتراحات' : 'Shuffle'}
@@ -1202,13 +1286,13 @@ export default function Home() {
             )}
           </div>
 
-          {/* شبكة المنتجات (ثابتة وعمودين على الموبايل لمنع أي تمدد) */}
+          {/* شبكة المنتجات */}
           <div
             className="products-grid"
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
-              gap: '16px',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(230px, 1fr))',
+              gap: '18px',
               width: '100%',
             }}
           >
@@ -1274,7 +1358,7 @@ export default function Home() {
                       className="product-img-box"
                       style={{
                         width: '100%',
-                        height: '160px',
+                        height: '170px',
                         backgroundColor: colors.cardInner,
                         borderRadius: '10px',
                         marginBottom: '10px',
@@ -1287,6 +1371,8 @@ export default function Home() {
                       <img
                         src={displayImg}
                         alt={p.name}
+                        loading="lazy"
+                        decoding="async"
                         referrerPolicy="no-referrer"
                         crossOrigin="anonymous"
                         onError={(e: any) => {
@@ -1301,17 +1387,23 @@ export default function Home() {
                         }}
                       />
                     </div>
-                    <span style={{ fontSize: '10px', color: colors.primary }}>
+                    <span
+                      style={{
+                        fontSize: '11px',
+                        color: colors.primary,
+                        fontWeight: 'bold',
+                      }}
+                    >
                       {p.category || 'عام'}
                     </span>
                     <h4
                       className="product-title"
                       style={{
-                        fontSize: '13px',
+                        fontSize: '13.5px',
                         fontWeight: 'bold',
                         margin: '6px 0',
                         lineHeight: '1.4',
-                        height: '36px',
+                        height: '38px',
                         overflow: 'hidden',
                         display: '-webkit-box',
                         WebkitLineClamp: 2,
@@ -1334,7 +1426,7 @@ export default function Home() {
                     <span
                       className="product-price"
                       style={{
-                        fontSize: '14px',
+                        fontSize: '15px',
                         fontWeight: 'bold',
                         color: colors.primary,
                       }}
@@ -1351,10 +1443,10 @@ export default function Home() {
                         backgroundColor: colors.primary,
                         color: colors.primaryText,
                         border: 'none',
-                        padding: '6px 12px',
+                        padding: '6px 14px',
                         borderRadius: '8px',
                         fontWeight: 'bold',
-                        fontSize: '11px',
+                        fontSize: '11.5px',
                         cursor: 'pointer',
                       }}
                     >
@@ -1373,8 +1465,8 @@ export default function Home() {
               <div
                 style={{
                   textAlign: 'center',
-                  marginTop: '30px',
-                  marginBottom: '20px',
+                  marginTop: '34px',
+                  marginBottom: '24px',
                 }}
               >
                 <button
@@ -1383,10 +1475,10 @@ export default function Home() {
                     backgroundColor: colors.cardInner,
                     color: colors.primary,
                     border: `1.5px solid ${colors.primary}`,
-                    padding: '10px 24px',
+                    padding: '11px 28px',
                     borderRadius: '12px',
                     fontWeight: 'bold',
-                    fontSize: '13px',
+                    fontSize: '14px',
                     cursor: 'pointer',
                     boxShadow: '0 4px 15px rgba(0, 210, 255, 0.15)',
                   }}
