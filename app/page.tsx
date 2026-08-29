@@ -234,6 +234,16 @@ export default function Home() {
     heart: '#ef4444',
   };
 
+  const toggleTheme = () => {
+    const next = theme === 'dark' ? 'light' : 'dark';
+    setTheme(next);
+    try {
+      localStorage.setItem('exotech_theme', next);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   const formatIQD = (amount: number) =>
     `${amount.toLocaleString()} ${lang === 'ar' ? 'دينار' : 'IQD'}`;
 
@@ -267,6 +277,9 @@ export default function Home() {
 
   useEffect(() => {
     try {
+      const savedTheme = localStorage.getItem('exotech_theme') as 'dark' | 'light';
+      if (savedTheme) setTheme(savedTheme);
+
       const savedCats = localStorage.getItem('exotech_nested_categories');
       if (savedCats) setSidebarCategories(JSON.parse(savedCats));
 
@@ -346,7 +359,6 @@ export default function Home() {
     saveCategories(updated);
   };
 
-  // التحكم بكروت الواجهة الرئيسية من الأدمن
   const handleAddHomeCategory = (newHomeCat: any) => {
     const updated = [...homeCategories, newHomeCat];
     setHomeCategories(updated);
@@ -902,6 +914,26 @@ export default function Home() {
               <span className="btn-text-hide">{lang === 'ar' ? 'حسابي' : 'Account'}</span>
             </button>
           )}
+
+          {/* زر التبديل بين الوضع الليلي والنهاري */}
+          <button
+            onClick={toggleTheme}
+            style={{
+              backgroundColor: colors.cardInner,
+              color: colors.text,
+              border: `1px solid ${colors.border}`,
+              padding: '7px 12px',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontSize: '14px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+            title={isDark ? 'الوضع النهاري' : 'الوضع الليلي'}
+          >
+            {isDark ? '☀️' : '🌙'}
+          </button>
 
           <button
             onClick={() => setLang(lang === 'ar' ? 'en' : 'ar')}
