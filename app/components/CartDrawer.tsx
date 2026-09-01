@@ -30,6 +30,9 @@ export default function CartDrawer({
   const [customerPhone, setCustomerPhone] = useState('');
   const [customerCity, setCustomerCity] = useState('بغداد');
   const [customerAddress, setCustomerAddress] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState<'cod' | 'mastercard'>('cod');
+  const [transferRef, setTransferRef] = useState('');
+  const [copied, setCopied] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!isOpen) return null;
@@ -39,11 +42,24 @@ export default function CartDrawer({
     0
   );
 
+  const handleCopyCard = () => {
+    navigator.clipboard.writeText('7112712786');
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   const handleSendOrder = async (e: any) => {
     e.preventDefault();
     if (!customerName || !customerPhone || !customerAddress) {
       return alert(
         lang === 'ar' ? 'يرجى ملء جميع الحقول!' : 'Please fill all fields!'
+      );
+    }
+    if (paymentMethod === 'mastercard' && !transferRef.trim()) {
+      return alert(
+        lang === 'ar'
+          ? 'يرجى كتابة رقم الحوالة / العملية للتأكد من استلام الدفع'
+          : 'Please enter the transaction reference number'
       );
     }
     if (cart.length === 0)
@@ -59,12 +75,18 @@ export default function CartDrawer({
       )
       .join('\n');
 
+    const paymentDetails =
+      paymentMethod === 'cod'
+        ? `💵 الدفع عند الاستلام (كاش)`
+        : `💳 تحويل ماستر كارد مباشر\n🔢 رقم العملية/الإشعار: ${transferRef.trim()}`;
+
     const messageText =
       `🛍️ طلب جديد - EXOTECH Store\n\n` +
       `👤 العميل: ${customerName}\n` +
       `📞 رقم الهاتف: ${customerPhone}\n` +
       `📍 المحافظة: ${customerCity}\n` +
       `🏠 العنوان: ${customerAddress}\n\n` +
+      `💳 طريقة الدفع: ${paymentDetails}\n\n` +
       `🛒 المنتجات المطلوبة:\n${itemsList}\n\n` +
       `💰 الإجمالي: ${formatIQD(totalAmount)}`;
 
@@ -84,6 +106,7 @@ export default function CartDrawer({
         setCustomerName('');
         setCustomerPhone('');
         setCustomerAddress('');
+        setTransferRef('');
         onClose();
       } else {
         alert(`Error: ${resData.description}`);
@@ -275,6 +298,119 @@ export default function CartDrawer({
                   borderRadius: '6px',
                 }}
               />
+
+              {/* قسم اختيار طريقة الدفع */}
+              <div style={{ marginTop: '6px' }}>
+                <span
+                  style={{
+                    fontSize: '12px',
+                    fontWeight: 'bold',
+                    color: colors.muted,
+                    display: 'block',
+                    marginBottom: '6px',
+                  }}
+                >
+                  {lang === 'ar' ? 'طريقة الدفع:' : 'Payment Method:'}
+                </span>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                  <button
+                    type="button"
+                    onClick={() => setPaymentMethod('cod')}
+                    style={{
+                      padding: '8px',
+                      borderRadius: '6px',
+                      border: `1px solid ${paymentMethod === 'cod' ? colors.primary : colors.border}`,
+                      backgroundColor: paymentMethod === 'cod' ? colors.primary + '22' : colors.cardInner,
+                      color: paymentMethod === 'cod' ? colors.primary : colors.text,
+                      fontSize: '11.5px',
+                      fontWeight: 'bold',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    💵 {lang === 'ar' ? 'عند الاستلام' : 'Cash on Delivery'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPaymentMethod('mastercard')}
+                    style={{
+                      padding: '8px',
+                      borderRadius: '6px',
+                      border: `1px solid ${paymentMethod === 'mastercard' ? colors.primary : colors.border}`,
+                      backgroundColor: paymentMethod === 'mastercard' ? colors.primary + '22' : colors.cardInner,
+                      color: paymentMethod === 'mastercard' ? colors.primary : colors.text,
+                      fontSize: '11.5px',
+                      fontWeight: 'bold',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    💳 {lang === 'ar' ? 'ماستر كارد' : 'MasterCard'}
+                  </button>
+                </div>
+              </div>
+
+              {/* صندوق تفاصيل تحويل الماستر كارد */}
+              {paymentMethod === 'mastercard' && (
+                <div
+                  style={{
+                    backgroundColor: colors.cardInner,
+                    border: `1px dashed ${colors.primary}`,
+                    borderRadius: '8px',
+                    padding: '12px',
+                    marginTop: '4px',
+                    fontSize: '12px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '8px',
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ color: colors.muted }}>صاحب الحساب:</span>
+                    <span style={{ fontWeight: 'bold' }}>حسين تقي</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ color: colors.muted }}>رقم الحساب/الماستر:</span>
+                    <span style={{ fontWeight: 'bold', color: colors.primary, letterSpacing: '1px' }}>
+                      7112712786
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleCopyCard}
+                    style={{
+                      backgroundColor: colors.primary,
+                      color: colors.primaryText,
+                      border: 'none',
+                      padding: '6px',
+                      borderRadius: '4px',
+                      fontWeight: 'bold',
+                      fontSize: '11px',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    {copied ? '✅ تم النسخ!' : '📋 نسخ رقم الماستر كارد'}
+                  </button>
+                  <input
+                    type="text"
+                    required={paymentMethod === 'mastercard'}
+                    value={transferRef}
+                    onChange={(e) => setTransferRef(e.target.value)}
+                    placeholder={
+                      lang === 'ar'
+                        ? 'رقم عملية التحويل / الحوالة *'
+                        : 'Transaction / Transfer Ref *'
+                    }
+                    style={{
+                      padding: '8px',
+                      backgroundColor: colors.surface,
+                      border: `1px solid ${colors.border}`,
+                      color: colors.text,
+                      borderRadius: '4px',
+                      fontSize: '11.5px',
+                      marginTop: '4px',
+                    }}
+                  />
+                </div>
+              )}
 
               <div
                 style={{
