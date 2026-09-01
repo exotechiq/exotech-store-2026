@@ -90,9 +90,17 @@ const INITIAL_CATEGORIES: CategoryItem[] = [
     id: 'معدات الشبكات',
     titleAr: 'معدات الشبكات',
     titleEn: 'Networking Equipment',
+    subcategories: [
+      { id: 'راوترات', titleAr: 'راوترات', titleEn: 'Routers' },
+    ],
   },
   { id: 'طاقة و UPS', titleAr: 'طاقة و UPS', titleEn: 'Power & UPS' },
   { id: 'تجميعات', titleAr: 'تجميعات كمبيوتر', titleEn: 'PC Builds' },
+  {
+    id: 'الطابعات والاحبار',
+    titleAr: 'الطابعات والاحبار',
+    titleEn: 'Printers & Inks',
+  },
   { id: 'عطور', titleAr: 'عطور', titleEn: 'Perfumes' },
 ];
 
@@ -281,7 +289,14 @@ export default function Home() {
       if (savedTheme) setTheme(savedTheme);
 
       const savedCats = localStorage.getItem('exotech_nested_categories');
-      if (savedCats) setSidebarCategories(JSON.parse(savedCats));
+      if (savedCats) {
+        const parsedCats = JSON.parse(savedCats);
+        const merged = [...INITIAL_CATEGORIES];
+        parsedCats.forEach((pCat: any) => {
+          if (!merged.some((m) => m.id === pCat.id)) merged.push(pCat);
+        });
+        setSidebarCategories(merged);
+      }
 
       const savedHomeCats = localStorage.getItem('exotech_home_categories');
       if (savedHomeCats) setHomeCategories(JSON.parse(savedHomeCats));
