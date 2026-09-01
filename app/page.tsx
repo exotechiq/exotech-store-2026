@@ -582,13 +582,36 @@ export default function Home() {
           letter-spacing: 1px;
         }
 
+        .header-btn {
+          background-color: ${colors.cardInner};
+          color: ${colors.text};
+          border: 1px solid ${colors.border};
+          padding: 7px 12px;
+          border-radius: 8px;
+          cursor: pointer;
+          font-size: 12.5px;
+          font-weight: bold;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 5px;
+        }
+
+        .wishlist-count {
+          display: inline-block;
+        }
+
         @media (max-width: 768px) {
           .banner-container { height: 180px !important; margin-bottom: 20px !important; border-radius: 14px !important; }
           .banner-title { font-size: 16px !important; margin-bottom: 4px !important; }
           .banner-desc { font-size: 11px !important; line-height: 1.4 !important; }
           .banner-content { padding: 0 16px !important; }
-          .header-container { padding: 10px 12px !important; }
-          .site-title { font-size: 19px !important; }
+          .header-container { padding: 8px 10px !important; }
+          .header-left-group { gap: 6px !important; }
+          .header-right-group { gap: 4px !important; }
+          .header-btn { padding: 6px 8px !important; min-width: 34px !important; height: 34px !important; font-size: 11px !important; }
+          .wishlist-count { display: none !important; }
+          .site-title { font-size: 17px !important; }
           .btn-text-hide { display: none !important; }
           .categories-scroll-row { gap: 10px !important; margin-bottom: 24px !important; }
           .cat-card-item { width: 95px !important; min-width: 95px !important; height: 180px !important; border-radius: 14px !important; }
@@ -831,18 +854,11 @@ export default function Home() {
           width: '100%',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <div className="header-left-group" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <button
             onClick={() => setIsDrawerOpen(true)}
-            style={{
-              backgroundColor: colors.cardInner,
-              color: colors.text,
-              border: `1px solid ${colors.border}`,
-              padding: '8px 12px',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontSize: '16px',
-            }}
+            className="header-btn"
+            style={{ fontSize: '15px' }}
           >
             ☰
           </button>
@@ -856,7 +872,7 @@ export default function Home() {
             }}
             className="rgb-logo site-title"
             style={{
-              fontSize: '26px',
+              fontSize: '24px',
               fontWeight: '900',
               letterSpacing: '1px',
               cursor: 'pointer',
@@ -867,7 +883,7 @@ export default function Home() {
           </h1>
         </div>
 
-        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+        <div className="header-right-group" style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
           {currentUser ? (
             <div
               style={{
@@ -875,17 +891,17 @@ export default function Home() {
                 alignItems: 'center',
                 gap: '4px',
                 backgroundColor: colors.cardInner,
-                padding: '5px 10px',
+                padding: '5px 8px',
                 borderRadius: '8px',
                 border: `1px solid ${colors.border}`,
               }}
             >
               <span
                 style={{
-                  fontSize: '12px',
+                  fontSize: '11.5px',
                   fontWeight: 'bold',
                   color: colors.primary,
-                  maxWidth: '100px',
+                  maxWidth: '75px',
                   whiteSpace: 'nowrap',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
@@ -911,19 +927,7 @@ export default function Home() {
           ) : (
             <button
               onClick={() => setIsAuthOpen(true)}
-              style={{
-                backgroundColor: colors.cardInner,
-                color: colors.text,
-                border: `1px solid ${colors.border}`,
-                padding: '7px 12px',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                fontSize: '12.5px',
-                fontWeight: 'bold',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '5px',
-              }}
+              className="header-btn"
             >
               <span>👤</span>
               <span className="btn-text-hide">{lang === 'ar' ? 'حسابي' : 'Account'}</span>
@@ -933,18 +937,7 @@ export default function Home() {
           {/* زر التبديل بين الوضع الليلي والنهاري */}
           <button
             onClick={toggleTheme}
-            style={{
-              backgroundColor: colors.cardInner,
-              color: colors.text,
-              border: `1px solid ${colors.border}`,
-              padding: '7px 12px',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontSize: '14px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
+            className="header-btn"
             title={isDark ? 'الوضع النهاري' : 'الوضع الليلي'}
           >
             {isDark ? '☀️' : '🌙'}
@@ -952,39 +945,21 @@ export default function Home() {
 
           <button
             onClick={() => setLang(lang === 'ar' ? 'en' : 'ar')}
-            style={{
-              backgroundColor: colors.cardInner,
-              color: colors.text,
-              border: `1px solid ${colors.border}`,
-              padding: '7px 12px',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontSize: '12px',
-              fontWeight: 'bold',
-            }}
+            className="header-btn"
           >
             {lang === 'ar' ? 'EN' : 'عربي'}
           </button>
 
           <button
             onClick={() => setIsWishlistOpen(true)}
+            className="header-btn"
             style={{
-              backgroundColor: colors.cardInner,
               color: wishlist.length > 0 ? colors.heart : colors.muted,
-              border: `1px solid ${colors.border}`,
-              padding: '7px 12px',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontSize: '13px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '4px',
-              fontWeight: 'bold',
             }}
           >
             <svg
-              width="16"
-              height="16"
+              width="15"
+              height="15"
               viewBox="0 0 24 24"
               fill={wishlist.length > 0 ? colors.heart : 'none'}
               stroke={colors.heart}
@@ -994,7 +969,7 @@ export default function Home() {
             >
               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
             </svg>
-            <span>({wishlist.length})</span>
+            <span className="wishlist-count">({wishlist.length})</span>
           </button>
 
           {view === 'admin' && (
@@ -1003,15 +978,9 @@ export default function Home() {
                 setView('store');
                 setSelectedProduct(null);
               }}
+              className="header-btn"
               style={{
-                backgroundColor: colors.cardInner,
                 color: colors.primary,
-                border: `1px solid ${colors.border}`,
-                padding: '7px 14px',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                fontWeight: 'bold',
-                fontSize: '12px',
               }}
             >
               العودة للمتجر
@@ -1025,19 +994,22 @@ export default function Home() {
                 backgroundColor: colors.primary,
                 color: colors.primaryText,
                 border: 'none',
-                padding: '7px 14px',
+                padding: '7px 11px',
                 borderRadius: '8px',
                 cursor: 'pointer',
                 fontWeight: 'bold',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '6px',
-                fontSize: '13px',
+                gap: '4px',
+                fontSize: '12.5px',
+                minWidth: '34px',
+                height: '34px',
+                justifyContent: 'center',
               }}
             >
               <svg
-                width="16"
-                height="16"
+                width="15"
+                height="15"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
