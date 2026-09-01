@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useState } from 'react';
 
 export interface SubcategoryItem {
   id: string;
@@ -33,7 +33,18 @@ export default function SidebarDrawer({
   lang,
   colors,
 }: SidebarDrawerProps) {
+  // حالة تتبع فتح وإغلاق تفرعات كل قسم
+  const [expandedCats, setExpandedCats] = useState<{ [key: string]: boolean }>({});
+
   if (!isOpen) return null;
+
+  const toggleExpand = (catId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setExpandedCats((prev) => ({
+      ...prev,
+      [catId]: !prev[catId],
+    }));
+  };
 
   return (
     <>
@@ -115,38 +126,77 @@ export default function SidebarDrawer({
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           {categories.map((cat) => {
             const isSelected = selectedCategory === cat.id;
+            const hasSubs = cat.subcategories && cat.subcategories.length > 0;
+            const isExpanded = !!expandedCats[cat.id];
+
             return (
               <div
                 key={cat.id}
                 style={{ display: 'flex', flexDirection: 'column' }}
               >
-                <button
-                  onClick={() => {
-                    onSelectCategory(cat.id);
-                    onClose();
-                  }}
+                <div
                   style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
                     backgroundColor: isSelected
                       ? colors.primary
                       : colors.cardInner,
-                    color: isSelected ? colors.primaryText : colors.text,
+                    borderRadius: '10px',
                     border: `1px solid ${
                       isSelected ? colors.primary : colors.border
                     }`,
-                    padding: '10px 14px',
-                    borderRadius: '10px',
-                    textAlign: lang === 'ar' ? 'right' : 'left',
-                    fontSize: '13.5px',
-                    fontWeight: isSelected ? 'bold' : '500',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s ease',
+                    overflow: 'hidden',
                   }}
                 >
-                  {lang === 'ar' ? cat.titleAr : cat.titleEn}
-                </button>
+                  <button
+                    onClick={() => {
+                      onSelectCategory(cat.id);
+                      onClose();
+                    }}
+                    style={{
+                      flex: 1,
+                      backgroundColor: 'transparent',
+                      color: isSelected ? colors.primaryText : colors.text,
+                      border: 'none',
+                      padding: '10px 14px',
+                      textAlign: lang === 'ar' ? 'right' : 'left',
+                      fontSize: '13.5px',
+                      fontWeight: isSelected ? 'bold' : '500',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                    }}
+                  >
+                    {lang === 'ar' ? cat.titleAr : cat.titleEn}
+                  </button>
 
-                {/* الأقسام الفرعية إن وجدت */}
-                {cat.subcategories && cat.subcategories.length > 0 && (
+                  {/* زر السهم لفتح وقفل التفرعات */}
+                  {hasSubs && (
+                    <button
+                      onClick={(e) => toggleExpand(cat.id, e)}
+                      style={{
+                        background: isSelected
+                          ? 'rgba(0,0,0,0.12)'
+                          : 'rgba(255,255,255,0.05)',
+                        border: 'none',
+                        color: isSelected ? colors.primaryText : colors.muted,
+                        padding: '10px 12px',
+                        cursor: 'pointer',
+                        fontSize: '11px',
+                        fontWeight: 'bold',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                      title="عرض المكونات الفرعية"
+                    >
+                      {isExpanded ? '▲' : '▼'}
+                    </button>
+                  )}
+                </div>
+
+                {/* الأقسام الفرعية - تظهر فقط عند النقر على السهم */}
+                {hasSubs && isExpanded && (
                   <div
                     style={{
                       display: 'flex',
@@ -155,9 +205,15 @@ export default function SidebarDrawer({
                       paddingRight: lang === 'ar' ? '14px' : '0',
                       paddingLeft: lang === 'ar' ? '0' : '14px',
                       marginTop: '4px',
+                      borderRight:
+                        lang === 'ar' ? `2px solid ${colors.primary}` : 'none',
+                      borderLeft:
+                        lang === 'ar' ? 'none' : `2px solid ${colors.primary}`,
+                      marginRight: lang === 'ar' ? '6px' : '0',
+                      marginLeft: lang === 'ar' ? '0' : '6px',
                     }}
                   >
-                    {cat.subcategories.map((sub) => (
+                    {cat.subcategories!.map((sub) => (
                       <button
                         key={sub.id}
                         onClick={() => {
@@ -175,6 +231,8 @@ export default function SidebarDrawer({
                           textAlign: lang === 'ar' ? 'right' : 'left',
                           fontSize: '12px',
                           cursor: 'pointer',
+                          fontWeight:
+                            selectedCategory === sub.id ? 'bold' : 'normal',
                         }}
                       >
                         • {lang === 'ar' ? sub.titleAr : sub.titleEn}
