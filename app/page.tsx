@@ -785,7 +785,6 @@ export default function Home() {
                           setCart((c) => [...c, { ...item, qty: 1 }]);
                         }
                         setIsWishlistOpen(false);
-                        setIsCartOpen(true);
                       }}
                       title="نقل للسلة"
                       style={{
@@ -1059,7 +1058,6 @@ export default function Home() {
             } else {
               setCart((c) => [...c, { ...p, qty }]);
             }
-            setIsCartOpen(true);
           }}
           formatIQD={formatIQD}
           lang={lang}
