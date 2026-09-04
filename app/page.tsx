@@ -1336,6 +1336,10 @@ export default function Home() {
                 <div
                   key={p.id}
                   className="product-card"
+                  onClick={() => {
+                    setSelectedProduct(p);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
                   style={{
                     backgroundColor: colors.card,
                     border: `1px solid ${colors.border}`,
@@ -1345,6 +1349,7 @@ export default function Home() {
                     flexDirection: 'column',
                     justifyContent: 'space-between',
                     position: 'relative',
+                    cursor: 'pointer',
                   }}
                 >
                   <button
@@ -1380,13 +1385,7 @@ export default function Home() {
                     </svg>
                   </button>
 
-                  <div
-                    onClick={() => {
-                      setSelectedProduct(p);
-                      window.scrollTo({ top: 0, behavior: 'smooth' });
-                    }}
-                    style={{ cursor: 'pointer' }}
-                  >
+                  <div>
                     <div
                       className="product-img-box"
                       style={{
@@ -1460,25 +1459,6 @@ export default function Home() {
                     >
                       {formatIQD(Number(p.price))}
                     </span>
-                    <button
-                      className="product-btn"
-                      onClick={() => {
-                        setSelectedProduct(p);
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                      }}
-                      style={{
-                        backgroundColor: colors.primary,
-                        color: colors.primaryText,
-                        border: 'none',
-                        padding: '6px 14px',
-                        borderRadius: '8px',
-                        fontWeight: 'bold',
-                        fontSize: '11.5px',
-                        cursor: 'pointer',
-                      }}
-                    >
-                      عرض
-                    </button>
                   </div>
                 </div>
               );
