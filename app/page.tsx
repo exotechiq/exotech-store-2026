@@ -22,7 +22,17 @@ const INITIAL_CATEGORIES: CategoryItem[] = [
     titleEn: 'Tools & Accessories',
   },
   { id: 'محولات', titleAr: 'محولات', titleEn: 'Adapters & Converters' },
-  { id: 'الصوت', titleAr: 'الصوت', titleEn: 'Audio & Sound' },
+  {
+    id: 'الصوت',
+    titleAr: 'الصوت',
+    titleEn: 'Audio & Sound',
+    subcategories: [
+      { id: 'مايكروفونات', titleAr: 'مايكروفونات', titleEn: 'Microphones' },
+      { id: 'سماعة الرأس', titleAr: 'سماعة الرأس', titleEn: 'Headphones' },
+      { id: 'سماعات اذن لاسلكية', titleAr: 'سماعات اذن لاسلكية', titleEn: 'Wireless Earbuds' },
+      { id: 'سبيكرات', titleAr: 'سبيكرات', titleEn: 'Speakers' },
+    ],
+  },
   { id: 'مايكات', titleAr: 'مايكات واحترافية', titleEn: 'Microphones' },
   { id: 'حقائب', titleAr: 'حقائب', titleEn: 'Bags & Cases' },
   { id: 'كيبلات', titleAr: 'كيبلات', titleEn: 'Cables & Wires' },
@@ -293,7 +303,13 @@ export default function Home() {
         const parsedCats = JSON.parse(savedCats);
         const merged = [...INITIAL_CATEGORIES];
         parsedCats.forEach((pCat: any) => {
-          if (!merged.some((m) => m.id === pCat.id)) merged.push(pCat);
+          const mIdx = merged.findIndex((m) => m.id === pCat.id);
+          if (mIdx === -1) {
+            merged.push(pCat);
+          } else if (pCat.id === 'الصوت' && (!pCat.subcategories || pCat.subcategories.length === 0)) {
+            // ضمان الحفاظ على التفرعات الجديدة لقسم الصوت إذا كان مخزناً في كاش المتصفح بدون تفرعات
+            merged[mIdx] = { ...merged[mIdx], ...pCat, subcategories: merged[mIdx].subcategories };
+          }
         });
         setSidebarCategories(merged);
       }
