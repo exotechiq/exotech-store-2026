@@ -71,9 +71,11 @@ export default function ProductDetailsView({
         .gallery-wrapper {
           display: flex;
           flex-direction: column;
-          gap: 12px;
+          gap: 14px;
           align-items: center;
+          justify-content: center;
           width: 100%;
+          margin: 0 auto;
         }
 
         .main-img-container {
@@ -92,6 +94,18 @@ export default function ProductDetailsView({
           box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
         }
 
+        .main-product-img {
+          max-width: 100%;
+          max-height: 100%;
+          width: auto;
+          height: auto;
+          object-fit: contain;
+          filter: drop-shadow(0 10px 20px rgba(0,0,0,0.6));
+          transition: opacity 0.2s ease;
+          display: block;
+          margin: auto;
+        }
+
         .gallery-nav-btn {
           position: absolute;
           top: 50%;
@@ -99,9 +113,9 @@ export default function ProductDetailsView({
           width: 36px;
           height: 36px;
           border-radius: 50%;
-          background: rgba(13, 17, 26, 0.75);
+          background: rgba(13, 17, 26, 0.85);
           backdrop-filter: blur(4px);
-          border: 1px solid rgba(255, 255, 255, 0.2);
+          border: 1px solid rgba(255, 255, 255, 0.25);
           color: #fff;
           display: flex;
           align-items: center;
@@ -109,8 +123,9 @@ export default function ProductDetailsView({
           cursor: pointer;
           font-size: 16px;
           font-weight: bold;
-          z-index: 5;
+          z-index: 10;
           transition: all 0.2s ease;
+          outline: none;
         }
 
         .gallery-nav-btn:hover {
@@ -122,12 +137,16 @@ export default function ProductDetailsView({
         .thumbs-container {
           display: flex;
           flex-direction: row;
+          justify-content: center;
+          align-items: center;
           gap: 10px;
           width: 100%;
+          max-width: 100%;
           overflow-x: auto;
-          padding-bottom: 6px;
+          padding: 4px 2px 8px 2px;
           scrollbar-width: thin;
           -webkit-overflow-scrolling: touch;
+          box-sizing: border-box;
         }
 
         .thumbs-container::-webkit-scrollbar {
@@ -155,19 +174,25 @@ export default function ProductDetailsView({
 
         @media (max-width: 900px) {
           .product-page-grid {
-            grid-template-columns: 1fr !important;
-            gap: 24px !important;
+            grid-template-columns: 100% !important;
+            gap: 20px !important;
+            margin-bottom: 24px !important;
+          }
+          .gallery-wrapper {
+            width: 100% !important;
+            max-width: 100% !important;
           }
           .main-img-container {
             width: 100% !important;
-            max-width: 100% !important;
+            max-width: 340px !important;
             height: 320px !important;
-            border-radius: 14px !important;
-            padding: 10px !important;
+            margin: 0 auto !important;
+            border-radius: 16px !important;
+            padding: 12px !important;
           }
           .gallery-nav-btn {
-            width: 30px !important;
-            height: 30px !important;
+            width: 32px !important;
+            height: 32px !important;
             font-size: 14px !important;
           }
           .gallery-nav-btn.prev-btn {
@@ -186,9 +211,10 @@ export default function ProductDetailsView({
             max-width: 100% !important;
           }
           .thumb-item {
-            width: 52px !important;
-            height: 52px !important;
-            min-width: 52px !important;
+            width: 54px !important;
+            height: 54px !important;
+            min-width: 54px !important;
+            border-radius: 8px !important;
           }
         }
       `}</style>
@@ -246,7 +272,7 @@ export default function ProductDetailsView({
 
       {/* شبكة تفاصيل المنتج والمعرض */}
       <div className="product-page-grid">
-        {/* معرض الصور: تنقل دائري في الصورة مع شريط مصغر أفقي بالأسفل */}
+        {/* معرض الصور: تنقل دائري في الصورة مع شريط مصغر أفقي متناسق بالوسط */}
         <div className="gallery-wrapper">
           <div className="main-img-container">
             {images.length > 1 && (
@@ -255,7 +281,7 @@ export default function ProductDetailsView({
                   type="button"
                   onClick={prevImage}
                   className="gallery-nav-btn prev-btn"
-                  style={{ left: '12px' }}
+                  style={{ left: '10px' }}
                 >
                   ‹
                 </button>
@@ -263,7 +289,7 @@ export default function ProductDetailsView({
                   type="button"
                   onClick={nextImage}
                   className="gallery-nav-btn next-btn"
-                  style={{ right: '12px' }}
+                  style={{ right: '10px' }}
                 >
                   ›
                 </button>
@@ -271,6 +297,7 @@ export default function ProductDetailsView({
             )}
 
             <img
+              className="main-product-img"
               src={images[activeImageIndex] || images[0]}
               alt={product.name}
               referrerPolicy="no-referrer"
@@ -278,15 +305,6 @@ export default function ProductDetailsView({
               onError={(e: any) => {
                 e.target.onerror = null;
                 e.target.src = 'https://via.placeholder.com/600?text=EXOTECH';
-              }}
-              style={{
-                maxWidth: '100%',
-                maxHeight: '100%',
-                width: 'auto',
-                height: 'auto',
-                objectFit: 'contain',
-                filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.6))',
-                transition: 'opacity 0.2s ease',
               }}
             />
           </div>
@@ -314,6 +332,9 @@ export default function ProductDetailsView({
                     boxSizing: 'border-box',
                     transition: 'border-color 0.2s',
                     flexShrink: 0,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
                   }}
                 >
                   <img
