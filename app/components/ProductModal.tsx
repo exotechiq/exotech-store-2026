@@ -54,6 +54,8 @@ export default function ProductDetailsView({
         margin: '0 auto',
         padding: '24px 20px',
         minHeight: '85vh',
+        boxSizing: 'border-box',
+        width: '100%',
       }}
     >
       <style>{`
@@ -63,6 +65,7 @@ export default function ProductDetailsView({
           gap: 48px;
           margin-bottom: 36px;
           align-items: start;
+          width: 100%;
         }
 
         .gallery-wrapper {
@@ -124,6 +127,7 @@ export default function ProductDetailsView({
           overflow-x: auto;
           padding-bottom: 6px;
           scrollbar-width: thin;
+          -webkit-overflow-scrolling: touch;
         }
 
         .thumbs-container::-webkit-scrollbar {
@@ -135,37 +139,70 @@ export default function ProductDetailsView({
           border-radius: 4px;
         }
 
+        .product-nav-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 28px;
+          border-bottom: 1px solid ${colors.border};
+          padding-bottom: 14px;
+        }
+
+        .add-cart-btn {
+          max-width: 300px;
+          width: 100%;
+        }
+
         @media (max-width: 900px) {
           .product-page-grid {
             grid-template-columns: 1fr !important;
-            gap: 28px !important;
+            gap: 24px !important;
           }
           .main-img-container {
             width: 100% !important;
-            max-width: 360px !important;
-            height: 340px !important;
+            max-width: 100% !important;
+            height: 320px !important;
+            border-radius: 14px !important;
+            padding: 10px !important;
+          }
+          .gallery-nav-btn {
+            width: 30px !important;
+            height: 30px !important;
+            font-size: 14px !important;
+          }
+          .gallery-nav-btn.prev-btn {
+            left: 8px !important;
+          }
+          .gallery-nav-btn.next-btn {
+            right: 8px !important;
+          }
+          .product-nav-header {
+            flex-direction: column-reverse !important;
+            align-items: flex-start !important;
+            gap: 12px !important;
+            margin-bottom: 18px !important;
+          }
+          .add-cart-btn {
+            max-width: 100% !important;
+          }
+          .thumb-item {
+            width: 52px !important;
+            height: 52px !important;
+            min-width: 52px !important;
           }
         }
       `}</style>
 
       {/* مسار التنقل وزر الرجوع */}
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: '28px',
-          borderBottom: `1px solid ${colors.border}`,
-          paddingBottom: '14px',
-        }}
-      >
+      <div className="product-nav-header">
         <div
           style={{
-            fontSize: '13.5px',
+            fontSize: '13px',
             color: colors.muted,
             display: 'flex',
             alignItems: 'center',
             gap: '8px',
+            flexWrap: 'wrap',
           }}
         >
           <span
@@ -217,7 +254,7 @@ export default function ProductDetailsView({
                 <button
                   type="button"
                   onClick={prevImage}
-                  className="gallery-nav-btn"
+                  className="gallery-nav-btn prev-btn"
                   style={{ left: '12px' }}
                 >
                   ‹
@@ -225,7 +262,7 @@ export default function ProductDetailsView({
                 <button
                   type="button"
                   onClick={nextImage}
-                  className="gallery-nav-btn"
+                  className="gallery-nav-btn next-btn"
                   style={{ right: '12px' }}
                 >
                   ›
@@ -245,6 +282,8 @@ export default function ProductDetailsView({
               style={{
                 maxWidth: '100%',
                 maxHeight: '100%',
+                width: 'auto',
+                height: 'auto',
                 objectFit: 'contain',
                 filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.6))',
                 transition: 'opacity 0.2s ease',
@@ -258,6 +297,7 @@ export default function ProductDetailsView({
                 <div
                   key={idx}
                   onClick={() => setActiveImageIndex(idx)}
+                  className="thumb-item"
                   style={{
                     width: '64px',
                     height: '64px',
@@ -393,6 +433,7 @@ export default function ProductDetailsView({
 
           <button
             onClick={() => onAddToCart(product, quantity)}
+            className="add-cart-btn"
             style={{
               backgroundColor: 'transparent',
               color: '#ffffff',
@@ -408,7 +449,6 @@ export default function ProductDetailsView({
               gap: '10px',
               boxShadow: '0 0 15px rgba(249, 115, 22, 0.15)',
               marginBottom: '16px',
-              maxWidth: '300px',
               transition: 'all 0.2s ease',
             }}
           >
@@ -440,7 +480,7 @@ export default function ProductDetailsView({
         </div>
       </div>
 
-      {/* التبويبات السفلية بدون إخلاء المسؤولية */}
+      {/* التبويبات السفلية */}
       <div
         style={{ borderTop: `1px solid ${colors.border}`, paddingTop: '16px' }}
       >
