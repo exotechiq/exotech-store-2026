@@ -152,8 +152,8 @@ const INITIAL_HOME_CATEGORIES = [
     bg: 'https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?auto=format&fit=crop&w=400&q=80',
   },
   {
-    id: 'مايكات',
-    titleAr: 'مايكات احترافية',
+    id: 'مايكروفونات',
+    titleAr: 'مايكروفونات',
     titleEn: 'Microphones',
     bg: 'https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&w=400&q=80',
   },
@@ -307,7 +307,6 @@ export default function Home() {
           if (mIdx === -1) {
             merged.push(pCat);
           } else if (pCat.id === 'الصوت' && (!pCat.subcategories || pCat.subcategories.length === 0)) {
-            // ضمان الحفاظ على التفرعات الجديدة لقسم الصوت إذا كان مخزناً في كاش المتصفح بدون تفرعات
             merged[mIdx] = { ...merged[mIdx], ...pCat, subcategories: merged[mIdx].subcategories };
           }
         });
@@ -315,7 +314,25 @@ export default function Home() {
       }
 
       const savedHomeCats = localStorage.getItem('exotech_home_categories');
-      if (savedHomeCats) setHomeCategories(JSON.parse(savedHomeCats));
+      if (savedHomeCats) {
+        const parsedHomeCats = JSON.parse(savedHomeCats);
+        // تحديث كرت مايكات احترافية إلى مايكروفونات إذا كان مخزناً مسبقاً في كاش المتصفح
+        const updatedHomeCats = parsedHomeCats.map((cat: any) => {
+          if (cat.id === 'مايكات' || cat.titleAr === 'مايكات احترافية') {
+            return {
+              id: 'مايكروفونات',
+              titleAr: 'مايكروفونات',
+              titleEn: 'Microphones',
+              bg: cat.bg || 'https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&w=400&q=80',
+            };
+          }
+          return cat;
+        });
+        setHomeCategories(updatedHomeCats);
+        localStorage.setItem('exotech_home_categories', JSON.stringify(updatedHomeCats));
+      } else {
+        setHomeCategories(INITIAL_HOME_CATEGORIES);
+      }
 
       const savedWishlist = localStorage.getItem('exotech_wishlist');
       if (savedWishlist) setWishlist(JSON.parse(savedWishlist));
