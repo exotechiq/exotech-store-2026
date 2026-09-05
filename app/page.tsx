@@ -622,8 +622,7 @@ export default function Home() {
         }
         .cat-card-text {
           font-size: 15px;
-          letter-spacing: 1.5px;
-          line-height: 1.2;
+          letter-spacing: 0.5px;
         }
 
         .header-btn {
@@ -658,12 +657,12 @@ export default function Home() {
           .site-title { font-size: 17px !important; }
           .btn-text-hide { display: none !important; }
           .categories-scroll-row { gap: 10px !important; margin-bottom: 24px !important; }
-          .cat-card-item { width: 95px !important; min-width: 95px !important; height: 195px !important; border-radius: 14px !important; }
-          .cat-card-text { font-size: 11.5px !important; letter-spacing: 0.5px !important; line-height: 1.15 !important; }
+          .cat-card-item { width: 95px !important; min-width: 95px !important; height: 215px !important; border-radius: 14px !important; }
+          .cat-card-text { font-size: 11.5px !important; letter-spacing: 0px !important; width: 205px !important; }
           .products-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 10px !important; }
           .product-card { padding: 10px !important; border-radius: 12px !important; }
           .product-img-box { height: 120px !important; margin-bottom: 8px !important; }
-          .product-title { font-size: 11.5px !important; margin: 4px 0 !important; min-height: 34px !important; height: auto !important; }
+          .product-title { font-size: 11.5px !important; margin: 4px 0 !important; height: auto !important; min-height: 34px !important; line-height: 1.35 !important; }
           .product-price { font-size: 13px !important; }
           .product-btn { padding: 6px 8px !important; font-size: 11px !important; }
         }
@@ -1282,23 +1281,21 @@ export default function Home() {
                       alignItems: 'center',
                       justifyContent: 'center',
                       pointerEvents: 'none',
-                      padding: '6px 2px',
-                      boxSizing: 'border-box',
                     }}
                   >
                     <span
                       className="cat-card-text"
                       style={{
-                        writingMode: 'vertical-rl',
-                        textOrientation: 'upright',
-                        whiteSpace: 'normal',
+                        transform: 'rotate(-90deg)',
+                        transformOrigin: 'center center',
+                        whiteSpace: 'nowrap',
                         color: isSelected ? colors.primary : '#ffffff',
                         fontWeight: '800',
                         textShadow: '0 2px 10px rgba(0,0,0,0.95)',
                         userSelect: 'none',
                         display: 'block',
+                        width: '240px',
                         textAlign: 'center',
-                        maxHeight: '100%',
                       }}
                     >
                       {lang === 'ar' ? cat.titleAr : cat.titleEn}
@@ -1472,13 +1469,14 @@ export default function Home() {
                     <h4
                       className="product-title"
                       style={{
-                        fontSize: '13.5px',
+                        fontSize: '13px',
                         fontWeight: 'bold',
                         margin: '6px 0',
                         lineHeight: '1.35',
-                        minHeight: '38px',
+                        minHeight: '36px',
+                        height: 'auto',
                         wordBreak: 'break-word',
-                        overflowWrap: 'break-word',
+                        color: colors.text,
                       }}
                     >
                       {p.name}
