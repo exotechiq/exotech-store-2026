@@ -333,7 +333,6 @@ export default function Home() {
           return cat;
         });
 
-        // التأكد من عدم وجود تكرار لنفس الكرت
         const uniqueHomeCats = updatedHomeCats.filter(
           (cat: any, index: number, self: any[]) =>
             index === self.findIndex((c) => c.id === cat.id)
@@ -622,8 +621,9 @@ export default function Home() {
           border-radius: 16px;
         }
         .cat-card-text {
-          font-size: 16px;
-          letter-spacing: 1px;
+          font-size: 15px;
+          letter-spacing: 1.5px;
+          line-height: 1.2;
         }
 
         .header-btn {
@@ -658,12 +658,12 @@ export default function Home() {
           .site-title { font-size: 17px !important; }
           .btn-text-hide { display: none !important; }
           .categories-scroll-row { gap: 10px !important; margin-bottom: 24px !important; }
-          .cat-card-item { width: 95px !important; min-width: 95px !important; height: 180px !important; border-radius: 14px !important; }
-          .cat-card-text { font-size: 13.5px !important; letter-spacing: 0.5px !important; }
+          .cat-card-item { width: 95px !important; min-width: 95px !important; height: 195px !important; border-radius: 14px !important; }
+          .cat-card-text { font-size: 11.5px !important; letter-spacing: 0.5px !important; line-height: 1.15 !important; }
           .products-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 10px !important; }
           .product-card { padding: 10px !important; border-radius: 12px !important; }
           .product-img-box { height: 120px !important; margin-bottom: 8px !important; }
-          .product-title { font-size: 12px !important; margin: 4px 0 !important; }
+          .product-title { font-size: 11.5px !important; margin: 4px 0 !important; min-height: 34px !important; height: auto !important; }
           .product-price { font-size: 13px !important; }
           .product-btn { padding: 6px 8px !important; font-size: 11px !important; }
         }
@@ -1240,7 +1240,7 @@ export default function Home() {
             />
           </div>
 
-          {/* شريط الأقسام الأفقي القابل للتمرير والسحب والمربوط بالأدمن */}
+          {/* شريط الأقسام الأفقي القابل للتمرير والسحب */}
           <div
             className="categories-scroll-row"
             style={{
@@ -1282,23 +1282,23 @@ export default function Home() {
                       alignItems: 'center',
                       justifyContent: 'center',
                       pointerEvents: 'none',
+                      padding: '6px 2px',
+                      boxSizing: 'border-box',
                     }}
                   >
                     <span
                       className="cat-card-text"
                       style={{
-                        transform: 'rotate(-90deg)',
-                        transformOrigin: 'center center',
-                        whiteSpace: 'nowrap',
+                        writingMode: 'vertical-rl',
+                        textOrientation: 'upright',
+                        whiteSpace: 'normal',
                         color: isSelected ? colors.primary : '#ffffff',
                         fontWeight: '800',
                         textShadow: '0 2px 10px rgba(0,0,0,0.95)',
                         userSelect: 'none',
                         display: 'block',
-                        width: '210px',
                         textAlign: 'center',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
+                        maxHeight: '100%',
                       }}
                     >
                       {lang === 'ar' ? cat.titleAr : cat.titleEn}
@@ -1475,12 +1475,10 @@ export default function Home() {
                         fontSize: '13.5px',
                         fontWeight: 'bold',
                         margin: '6px 0',
-                        lineHeight: '1.4',
-                        height: '38px',
-                        overflow: 'hidden',
-                        display: '-webkit-box',
-                        WebkitLineClamp: 2,
-                        WebkitBoxOrient: 'vertical',
+                        lineHeight: '1.35',
+                        minHeight: '38px',
+                        wordBreak: 'break-word',
+                        overflowWrap: 'break-word',
                       }}
                     >
                       {p.name}
