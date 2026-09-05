@@ -316,9 +316,13 @@ export default function Home() {
       const savedHomeCats = localStorage.getItem('exotech_home_categories');
       if (savedHomeCats) {
         const parsedHomeCats = JSON.parse(savedHomeCats);
-        // تحديث كرت مايكات احترافية إلى مايكروفونات إذا كان مخزناً مسبقاً في كاش المتصفح
         const updatedHomeCats = parsedHomeCats.map((cat: any) => {
-          if (cat.id === 'مايكات' || cat.titleAr === 'مايكات احترافية') {
+          if (
+            cat.id === 'مايكات' ||
+            cat.id === 'مايكات احترافية' ||
+            cat.titleAr === 'مايكات احترافية' ||
+            cat.id === 'مايكروفونات'
+          ) {
             return {
               id: 'مايكروفونات',
               titleAr: 'مايكروفونات',
@@ -328,8 +332,14 @@ export default function Home() {
           }
           return cat;
         });
-        setHomeCategories(updatedHomeCats);
-        localStorage.setItem('exotech_home_categories', JSON.stringify(updatedHomeCats));
+
+        const uniqueHomeCats = updatedHomeCats.filter(
+          (cat: any, index: number, self: any[]) =>
+            index === self.findIndex((c) => c.id === cat.id)
+        );
+
+        setHomeCategories(uniqueHomeCats);
+        localStorage.setItem('exotech_home_categories', JSON.stringify(uniqueHomeCats));
       } else {
         setHomeCategories(INITIAL_HOME_CATEGORIES);
       }
@@ -611,8 +621,8 @@ export default function Home() {
           border-radius: 16px;
         }
         .cat-card-text {
-          font-size: 16px;
-          letter-spacing: 1px;
+          font-size: 15px;
+          letter-spacing: 2px;
         }
 
         .header-btn {
@@ -648,7 +658,7 @@ export default function Home() {
           .btn-text-hide { display: none !important; }
           .categories-scroll-row { gap: 10px !important; margin-bottom: 24px !important; }
           .cat-card-item { width: 95px !important; min-width: 95px !important; height: 180px !important; border-radius: 14px !important; }
-          .cat-card-text { font-size: 13.5px !important; letter-spacing: 0.5px !important; }
+          .cat-card-text { font-size: 12.5px !important; letter-spacing: 1px !important; }
           .products-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 10px !important; }
           .product-card { padding: 10px !important; border-radius: 12px !important; }
           .product-img-box { height: 120px !important; margin-bottom: 8px !important; }
@@ -1270,21 +1280,25 @@ export default function Home() {
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
+                      pointerEvents: 'none',
+                      padding: '8px 4px',
+                      boxSizing: 'border-box',
                     }}
                   >
                     <span
                       className="cat-card-text"
                       style={{
-                        transform: 'rotate(-90deg)',
-                        transformOrigin: 'center center',
+                        writingMode: 'vertical-rl',
+                        textOrientation: 'upright',
                         whiteSpace: 'nowrap',
                         color: isSelected ? colors.primary : '#ffffff',
                         fontWeight: '800',
                         textShadow: '0 2px 10px rgba(0,0,0,0.95)',
                         userSelect: 'none',
                         display: 'block',
-                        width: '230px',
                         textAlign: 'center',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
                       }}
                     >
                       {lang === 'ar' ? cat.titleAr : cat.titleEn}
